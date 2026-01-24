@@ -28,6 +28,18 @@ services:
         condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_BASE_URL=${GEMINI_BASE_URL}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - FEISHU_APP_ID=${FEISHU_APP_ID}
+      - FEISHU_APP_SECRET=${FEISHU_APP_SECRET}
+      - FEISHU_BITABLE_APP_TOKEN=${FEISHU_BITABLE_APP_TOKEN}
+      - FEISHU_BITABLE_TABLE_ID=${FEISHU_BITABLE_TABLE_ID}
+      - STORAGE_PATH=${STORAGE_PATH:-/app/storage}
+      - VIDEO_STORAGE_PATH=${VIDEO_STORAGE_PATH:-/app/storage/videos}
+      - ANALYSIS_STORAGE_PATH=${ANALYSIS_STORAGE_PATH:-/app/storage/analysis}
+      - API_SECRET_KEY=${API_SECRET_KEY:-tiktok-analyzer-secret-key-2024}
+      - DEBUG=${DEBUG:-false}
     command: uvicorn main:app --host 0.0.0.0 --port 8000
     restart: always
     networks:
@@ -44,6 +56,16 @@ services:
         condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_BASE_URL=${GEMINI_BASE_URL}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - FEISHU_APP_ID=${FEISHU_APP_ID}
+      - FEISHU_APP_SECRET=${FEISHU_APP_SECRET}
+      - FEISHU_BITABLE_APP_TOKEN=${FEISHU_BITABLE_APP_TOKEN}
+      - FEISHU_BITABLE_TABLE_ID=${FEISHU_BITABLE_TABLE_ID}
+      - STORAGE_PATH=${STORAGE_PATH:-/app/storage}
+      - VIDEO_STORAGE_PATH=${VIDEO_STORAGE_PATH:-/app/storage/videos}
+      - ANALYSIS_STORAGE_PATH=${ANALYSIS_STORAGE_PATH:-/app/storage/analysis}
     command: celery -A celery_app worker --loglevel=info --concurrency=2
     restart: always
     networks:
@@ -60,6 +82,9 @@ services:
         condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - STORAGE_PATH=${STORAGE_PATH:-/app/storage}
+      - VIDEO_STORAGE_PATH=${VIDEO_STORAGE_PATH:-/app/storage/videos}
+      - ANALYSIS_STORAGE_PATH=${ANALYSIS_STORAGE_PATH:-/app/storage/analysis}
     command: celery -A celery_app beat --loglevel=info
     restart: always
     networks:

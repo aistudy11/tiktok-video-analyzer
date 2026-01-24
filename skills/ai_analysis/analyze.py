@@ -14,40 +14,59 @@ logger = logging.getLogger(__name__)
 class GeminiVideoAnalyzer:
     """Analyze videos using Gemini API via APImart proxy"""
 
-    DEFAULT_PROMPT = """你是一个专业的短视频内容分析师。请分析这个TikTok/抖音视频并提供以下信息：
+    DEFAULT_PROMPT = """你是一个专业的短视频内容分析师和爆款研究专家。请深度分析这个TikTok/抖音视频，从内容创作者角度提供全面的分析报告：
 
 ## 分析要求
 
 1. **内容摘要** (100字以内)
-   - 视频主要讲什么
+   - 视频主要讲什么，核心卖点
 
-2. **内容分类**
+2. **爆款原因分析** (重点！200字以内)
+   - 这个视频为什么能火/有潜力火？
+   - 从选题、情绪价值、信息增量、共鸣点等维度分析
+   - 哪些元素容易引发用户互动和分享
+
+3. **镜头语言分析** (专业视频制作角度，150字以内)
+   - 拍摄角度（俯拍/平拍/仰拍/特写等）
+   - 运镜方式（推/拉/摇/移/跟/甩等）
+   - 剪辑节奏和转场特点
+   - BGM与画面的配合
+   - 色调和视觉风格
+
+4. **AI视频生成提示词** (可直接复用的Prompt，200字以内)
+   - 基于这个视频的风格，写一个可以用于AI视频生成工具（如Runway、Pika、Sora等）的详细提示词
+   - 包含：画面描述、运镜、风格、节奏等要素
+
+5. **内容分类**
    - 主题类型（如：教程、娱乐、生活、美食、科技、时尚等）
    - 目标受众
 
-3. **关键话题** (3-5个)
+6. **关键话题** (3-5个)
    - 视频涉及的主要话题标签
 
-4. **情感基调**
+7. **情感基调**
    - positive/neutral/negative
    - 简述原因
 
-5. **互动潜力评估**
+8. **互动潜力评估**
    - 预测互动等级：high/medium/low
    - 分析原因
 
-6. **营销价值分析**
+9. **营销价值分析**
    - 是否适合品牌合作
    - 适合的品牌类型
    - 植入方式建议
 
-7. **改进建议** (2-3条)
-   - 如何提升视频质量或传播效果
+10. **改进建议** (2-3条)
+    - 如何提升视频质量或传播效果
 
 请用JSON格式输出，确保可以被解析：
 ```json
 {
     "summary": "内容摘要",
+    "viral_reason": "爆款原因分析 - 详细说明为什么这个视频能火",
+    "cinematography": "镜头语言分析 - 拍摄角度、运镜、剪辑、BGM、色调等专业分析",
+    "ai_video_prompt": "AI视频生成提示词 - 可直接用于Runway/Pika/Sora的详细prompt",
     "category": "内容分类",
     "target_audience": "目标受众",
     "topics": ["话题1", "话题2"],
@@ -246,6 +265,10 @@ class GeminiVideoAnalyzer:
                             "sentiment": parsed.get("sentiment", "neutral"),
                             "engagement_prediction": parsed.get("engagement_level", "medium"),
                             "recommendations": parsed.get("recommendations", []),
+                            # 新增字段 - 来自公众号文章
+                            "viral_reason": parsed.get("viral_reason", ""),
+                            "cinematography": parsed.get("cinematography", ""),
+                            "ai_video_prompt": parsed.get("ai_video_prompt", ""),
                             "parsed_data": parsed,
                         }
 

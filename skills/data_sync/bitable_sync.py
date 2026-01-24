@@ -138,6 +138,29 @@ class FeishuBitableSync:
             if parsed.get("category"):
                 fields["category"] = parsed["category"]
 
+            # 新增字段 - 来自公众号文章要求
+            # 爆款原因分析
+            if parsed.get("viral_reason"):
+                fields["爆款原因分析"] = parsed["viral_reason"][:5000]
+
+            # 镜头语言分析
+            if parsed.get("cinematography"):
+                fields["镜头语言分析"] = parsed["cinematography"][:5000]
+
+            # AI视频提示词
+            if parsed.get("ai_video_prompt"):
+                fields["AI视频提示词"] = parsed["ai_video_prompt"][:5000]
+
+        # 也从顶层 analysis_result 获取新字段（如果 parsed_data 中没有）
+        if not fields.get("爆款原因分析") and analysis_result.get("viral_reason"):
+            fields["爆款原因分析"] = analysis_result["viral_reason"][:5000]
+
+        if not fields.get("镜头语言分析") and analysis_result.get("cinematography"):
+            fields["镜头语言分析"] = analysis_result["cinematography"][:5000]
+
+        if not fields.get("AI视频提示词") and analysis_result.get("ai_video_prompt"):
+            fields["AI视频提示词"] = analysis_result["ai_video_prompt"][:5000]
+
         return fields
 
     def create_record(self, fields: Dict[str, Any]) -> Dict[str, Any]:

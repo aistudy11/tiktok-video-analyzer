@@ -105,7 +105,12 @@ def analyze_video_task(self, task_id: str):
             "sentiment": ai_result.get("sentiment"),
             "engagement_prediction": ai_result.get("engagement_prediction"),
             "recommendations": ai_result.get("recommendations", []),
-            "raw_metadata": metadata
+            "raw_metadata": metadata,
+            # 新增字段 - 来自公众号文章要求
+            "viral_reason": ai_result.get("viral_reason"),
+            "cinematography": ai_result.get("cinematography"),
+            "ai_video_prompt": ai_result.get("ai_video_prompt"),
+            "parsed_data": ai_result.get("parsed_data", {}),
         }
 
         tm.update_task(

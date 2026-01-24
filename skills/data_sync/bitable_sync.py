@@ -81,85 +81,71 @@ class FeishuBitableSync:
         analysis_result: Dict[str, Any],
         video_path: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Format analysis result to Bitable fields"""
+        """Format analysis result to Bitable fields (全部使用中文字段名)"""
+
+        # 基础字段 - 视频元信息
         fields = {
-            "task_id": task_id,
-            "url": {
+            "任务ID": task_id,
+            "视频链接": {
                 "link": url,
                 "text": url[:50] + "..." if len(url) > 50 else url
             },
-            "video_title": analysis_result.get("video_title", "")[:100] or "未知标题",
-            "author": analysis_result.get("author", "")[:50] or "未知作者",
-            "duration": analysis_result.get("duration", 0),
-            "description": (analysis_result.get("description") or "")[:2000],
-            "hashtags": ", ".join(analysis_result.get("hashtags", []))[:500],
-            "ai_analysis": (analysis_result.get("ai_analysis") or "")[:10000],
-            "content_summary": (analysis_result.get("content_summary") or "")[:2000],
-            "key_topics": ", ".join(analysis_result.get("key_topics", []))[:500],
-            "sentiment": analysis_result.get("sentiment", "neutral"),
-            "engagement_prediction": analysis_result.get("engagement_prediction", "medium"),
-            "recommendations": "\n".join(
-                [f"• {r}" for r in analysis_result.get("recommendations", [])]
-            )[:2000],
-            "created_at": int(datetime.now().timestamp() * 1000),
+            "视频标题": analysis_result.get("video_title", "")[:100] or "未知标题",
+            "作者": analysis_result.get("author", "")[:50] or "未知作者",
+            "时长(秒)": analysis_result.get("duration", 0),
+            "视频描述": (analysis_result.get("description") or "")[:2000],
+            "话题标签": ", ".join(analysis_result.get("hashtags", []))[:500],
+            "创建时间": int(datetime.now().timestamp() * 1000),
         }
 
-        # Add raw metadata as JSON
-        if analysis_result.get("raw_metadata"):
-            fields["raw_metadata"] = json.dumps(
-                analysis_result["raw_metadata"],
-                ensure_ascii=False,
-                indent=2
-            )[:5000]
+        # AI分析字段
+        fields["内容摘要"] = (analysis_result.get("content_summary") or "")[:2000]
+        fields["关键话题"] = ", ".join(analysis_result.get("key_topics", []))[:500]
+        fields["情感倾向"] = analysis_result.get("sentiment", "neutral")
+        fields["互动潜力"] = analysis_result.get("engagement_prediction", "medium")
+        fields["改进建议"] = "\n".join(
+            [f"• {r}" for r in analysis_result.get("recommendations", [])]
+        )[:2000]
 
-        # Add parsed data if available
-        if analysis_result.get("parsed_data"):
-            parsed = analysis_result["parsed_data"]
+        # 从 parsed_data 获取详细分析数据
+        parsed = analysis_result.get("parsed_data", {})
 
-            # Marketing value
-            if parsed.get("marketing_value"):
-                mv = parsed["marketing_value"]
-                marketing_text = []
-                if mv.get("suitable_for_brands"):
-                    marketing_text.append("适合品牌合作: 是")
-                else:
-                    marketing_text.append("适合品牌合作: 否")
-                if mv.get("brand_types"):
-                    marketing_text.append(f"适合品牌类型: {', '.join(mv['brand_types'])}")
-                if mv.get("integration_suggestions"):
-                    marketing_text.append(f"植入建议: {', '.join(mv['integration_suggestions'])}")
-                fields["marketing_value"] = "\n".join(marketing_text)
+        # 爆款原因分析
+        viral_reason = parsed.get("viral_reason") or analysis_result.get("viral_reason")
+        if viral_reason:
+            fields["爆款原因分析"] = viral_reason[:5000]
 
-            # Target audience
-            if parsed.get("target_audience"):
-                fields["target_audience"] = parsed["target_audience"]
+        # 镜头语言分析
+        cinematography = parsed.get("cinematography") or analysis_result.get("cinematography")
+        if cinematography:
+            fields["镜头语言分析"] = cinematography[:5000]
 
-            # Category
-            if parsed.get("category"):
-                fields["category"] = parsed["category"]
+        # AI视频提示词
+        ai_video_prompt = parsed.get("ai_video_prompt") or analysis_result.get("ai_video_prompt")
+        if ai_video_prompt:
+            fields["AI视频提示词"] = ai_video_prompt[:5000]
 
-            # 新增字段 - 来自公众号文章要求
-            # 爆款原因分析
-            if parsed.get("viral_reason"):
-                fields["爆款原因分析"] = parsed["viral_reason"][:5000]
+        # 内容分类
+        if parsed.get("category"):
+            fields["内容分类"] = parsed["category"]
 
-            # 镜头语言分析
-            if parsed.get("cinematography"):
-                fields["镜头语言分析"] = parsed["cinematography"][:5000]
+        # 目标受众
+        if parsed.get("target_audience"):
+            fields["目标受众"] = parsed["target_audience"]
 
-            # AI视频提示词
-            if parsed.get("ai_video_prompt"):
-                fields["AI视频提示词"] = parsed["ai_video_prompt"][:5000]
-
-        # 也从顶层 analysis_result 获取新字段（如果 parsed_data 中没有）
-        if not fields.get("爆款原因分析") and analysis_result.get("viral_reason"):
-            fields["爆款原因分析"] = analysis_result["viral_reason"][:5000]
-
-        if not fields.get("镜头语言分析") and analysis_result.get("cinematography"):
-            fields["镜头语言分析"] = analysis_result["cinematography"][:5000]
-
-        if not fields.get("AI视频提示词") and analysis_result.get("ai_video_prompt"):
-            fields["AI视频提示词"] = analysis_result["ai_video_prompt"][:5000]
+        # 营销价值分析
+        if parsed.get("marketing_value"):
+            mv = parsed["marketing_value"]
+            marketing_text = []
+            if mv.get("suitable_for_brands"):
+                marketing_text.append("适合品牌合作: 是")
+            else:
+                marketing_text.append("适合品牌合作: 否")
+            if mv.get("brand_types"):
+                marketing_text.append(f"适合品牌类型: {', '.join(mv['brand_types'])}")
+            if mv.get("integration_suggestions"):
+                marketing_text.append(f"植入建议: {', '.join(mv['integration_suggestions'])}")
+            fields["营销价值"] = "\n".join(marketing_text)
 
         return fields
 
@@ -219,7 +205,7 @@ class FeishuBitableSync:
         }
 
     def find_record_by_task_id(self, task_id: str) -> Optional[str]:
-        """Find existing record by task_id"""
+        """Find existing record by 任务ID"""
         url = f"{self.BASE_URL}/bitable/v1/apps/{self.app_token}/tables/{self.table_id}/records/search"
 
         payload = {
@@ -227,7 +213,7 @@ class FeishuBitableSync:
                 "conjunction": "and",
                 "conditions": [
                     {
-                        "field_name": "task_id",
+                        "field_name": "任务ID",
                         "operator": "is",
                         "value": [task_id]
                     }
@@ -363,17 +349,28 @@ if __name__ == "__main__":
         task_id="test_123",
         url="https://www.tiktok.com/@test/video/123",
         analysis_result={
-            "video_title": "Test Video",
-            "author": "test_user",
+            "video_title": "测试视频",
+            "author": "测试用户",
             "duration": 30,
-            "description": "Test description",
-            "hashtags": ["test", "video"],
-            "ai_analysis": "This is a test analysis",
-            "content_summary": "Test summary",
-            "key_topics": ["testing"],
+            "description": "测试描述",
+            "hashtags": ["测试", "视频"],
+            "content_summary": "测试摘要",
+            "key_topics": ["测试话题"],
             "sentiment": "positive",
             "engagement_prediction": "high",
-            "recommendations": ["Recommendation 1", "Recommendation 2"]
+            "recommendations": ["建议1", "建议2"],
+            "viral_reason": "测试爆款原因分析",
+            "cinematography": "测试镜头语言分析",
+            "ai_video_prompt": "测试AI视频提示词",
+            "parsed_data": {
+                "category": "测试分类",
+                "target_audience": "测试用户群体",
+                "marketing_value": {
+                    "suitable_for_brands": True,
+                    "brand_types": ["品牌类型1"],
+                    "integration_suggestions": ["植入建议1"]
+                }
+            }
         }
     )
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2, ensure_ascii=False))

@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for caching
-COPY requirements.txt .
+COPY gateway/requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -38,10 +38,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install Playwright browsers
 RUN playwright install chromium
 
-# Copy application code
-COPY . .
+# Copy gateway application code
+COPY gateway/ .
 
-# Note: skills directory is mounted via docker-compose volume
+# Copy skills directory
+COPY skills/ /app/skills/
+
 # Create storage directories
 RUN mkdir -p /app/storage/videos /app/storage/analysis /app/storage/logs
 

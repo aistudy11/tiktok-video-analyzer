@@ -3,8 +3,6 @@ version: '3.8'
 services:
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -12,55 +10,52 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    restart: always
 
   gateway:
     build:
-      context: ./gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: gateway/Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./storage:/app/storage
-      - ./skills:/app/skills
-    env_file:
-      - .env
+      - storage_data:/app/storage
     depends_on:
       redis:
         condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379/0
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: always
 
   celery_worker:
     build:
-      context: ./gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: gateway/Dockerfile
     volumes:
-      - ./storage:/app/storage
-      - ./skills:/app/skills
-    env_file:
-      - .env
+      - storage_data:/app/storage
     depends_on:
       redis:
         condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379/0
     command: celery -A celery_app worker --loglevel=info --concurrency=2
+    restart: always
 
   celery_beat:
     build:
-      context: ./gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: gateway/Dockerfile
     volumes:
-      - ./storage:/app/storage
-    env_file:
-      - .env
+      - storage_data:/app/storage
     depends_on:
       redis:
         condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379/0
     command: celery -A celery_app beat --loglevel=info
+    restart: always
 
 volumes:
   redis_data:
+  storage_data:

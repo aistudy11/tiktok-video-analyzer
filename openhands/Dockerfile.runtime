@@ -1,0 +1,79 @@
+# OpenHands Runtime with Playwright
+# Based on OpenHands runtime image with browser automation support
+
+FROM python:3.11-slim
+
+LABEL maintainer="TikTok Video Analyzer"
+LABEL description="OpenHands runtime with Playwright for TikTok video download"
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+# Install system dependencies for Playwright and video processing
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Basic utilities
+    curl \
+    wget \
+    gnupg \
+    ca-certificates \
+    # For Playwright Chromium
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    xdg-utils \
+    libu2f-udev \
+    libvulkan1 \
+    # For video processing
+    ffmpeg \
+    # Cleanup
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install \
+    playwright==1.41.0 \
+    httpx==0.26.0 \
+    google-generativeai==0.3.2 \
+    aiofiles==23.2.1 \
+    pydantic==2.5.3
+
+# Install Playwright browsers
+RUN playwright install chromium && \
+    playwright install-deps chromium
+
+# Create necessary directories
+RUN mkdir -p /app/storage/videos \
+    /app/storage/analysis \
+    /app/storage/logs
+
+# Copy skills
+COPY ../skills /app/skills
+
+# Set permissions
+RUN chmod -R 755 /app
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "from playwright.sync_api import sync_playwright; print('OK')" || exit 1
+
+# Default command (can be overridden)
+CMD ["python", "-c", "print('OpenHands Runtime Ready')"]

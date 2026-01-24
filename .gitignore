@@ -1,0 +1,65 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Storage (keep directories, ignore contents)
+storage/videos/*
+storage/analysis/*
+storage/logs/*
+!storage/videos/.gitkeep
+!storage/analysis/.gitkeep
+!storage/logs/.gitkeep
+
+# Test downloads
+test_downloads/
+
+# Logs
+*.log
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+dokploy-env.txt

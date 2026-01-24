@@ -8,7 +8,8 @@ from pathlib import Path
 
 # Add parent and skills directories to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "skills"))
+# Skills are at /app/skills in Docker (same level as gateway code)
+sys.path.insert(0, str(Path(__file__).parent.parent / "skills"))
 
 from celery_app import celery_app
 from config import settings

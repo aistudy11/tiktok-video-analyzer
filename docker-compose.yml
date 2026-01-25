@@ -1,11 +1,14 @@
 version: '3.8'
 
 services:
+  # Redis
   redis:
     image: redis:7-alpine
     hostname: redis
     volumes:
       - redis_data:/data
+    ports:
+      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -15,10 +18,12 @@ services:
     networks:
       - app-network
 
-  gateway:
+  # FastAPI 后端
+  backend:
     build:
-      context: .
-      dockerfile: gateway/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
+    hostname: backend
     ports:
       - "8000:8000"
     volumes:
@@ -45,10 +50,12 @@ services:
     networks:
       - app-network
 
+  # Celery Worker
   celery_worker:
     build:
-      context: .
-      dockerfile: gateway/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
+    hostname: celery_worker
     volumes:
       - storage_data:/app/storage
     depends_on:
@@ -71,10 +78,12 @@ services:
     networks:
       - app-network
 
+  # Celery Beat
   celery_beat:
     build:
-      context: .
-      dockerfile: gateway/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
+    hostname: celery_beat
     volumes:
       - storage_data:/app/storage
     depends_on:
@@ -86,6 +95,46 @@ services:
       - VIDEO_STORAGE_PATH=${VIDEO_STORAGE_PATH:-/app/storage/videos}
       - ANALYSIS_STORAGE_PATH=${ANALYSIS_STORAGE_PATH:-/app/storage/analysis}
     command: celery -A celery_app beat --loglevel=info
+    restart: always
+    networks:
+      - app-network
+
+  # Next.js 前端 (使用 Supabase 数据库)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    hostname: frontend
+    environment:
+      # Supabase 数据库
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_PROVIDER=postgresql
+      - DB_SINGLETON_ENABLED=true
+      # 认证
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_URL=${AUTH_URL:-http://localhost:3000}
+      # Google OAuth
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
+      - NEXT_PUBLIC_AUTH_GOOGLE_ID=${NEXT_PUBLIC_AUTH_GOOGLE_ID}
+      - NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=${NEXT_PUBLIC_AUTH_GOOGLE_ENABLED:-true}
+      - NEXT_PUBLIC_AUTH_GOOGLE_ONE_TAP_ENABLED=${NEXT_PUBLIC_AUTH_GOOGLE_ONE_TAP_ENABLED:-true}
+      # GitHub OAuth
+      - AUTH_GITHUB_ID=${AUTH_GITHUB_ID}
+      - AUTH_GITHUB_SECRET=${AUTH_GITHUB_SECRET}
+      - NEXT_PUBLIC_AUTH_GITHUB_ENABLED=${NEXT_PUBLIC_AUTH_GITHUB_ENABLED:-true}
+      # 后端 API
+      - BACKEND_API_URL=http://backend:8000
+      # 应用配置
+      - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME:-TikTok视频分析器}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_APP_DESCRIPTION=${NEXT_PUBLIC_APP_DESCRIPTION:-AI驱动的TikTok视频分析平台}
+      - NEXT_PUBLIC_THEME=${NEXT_PUBLIC_THEME:-default}
+      - NEXT_PUBLIC_APPEARANCE=${NEXT_PUBLIC_APPEARANCE:-system}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
     restart: always
     networks:
       - app-network

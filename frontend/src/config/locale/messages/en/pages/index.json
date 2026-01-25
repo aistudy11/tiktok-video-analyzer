@@ -1,0 +1,168 @@
+{
+  "page": {
+    "show_sections": [
+      "hero",
+      "tiktok-analyzer",
+      "features",
+      "stats",
+      "faq",
+      "cta"
+    ],
+    "sections": {
+      "hero": {
+        "id": "hero",
+        "title": "TikTok Video Analyzer",
+        "highlight_text": "Analyzer",
+        "description": "AI-powered TikTok video analysis platform.<br/>Discover trends, analyze performance, and get insights.",
+        "tip": "🚀 Free to use for all users",
+        "buttons": [
+          {
+            "title": "Start Analyzing",
+            "icon": "BarChart3",
+            "url": "#tiktok-analyzer",
+            "target": "_self",
+            "variant": "default"
+          },
+          {
+            "title": "View Trending",
+            "icon": "TrendingUp",
+            "url": "/tiktok-trending",
+            "target": "_self",
+            "variant": "outline"
+          }
+        ],
+        "show_avatars": false,
+        "background_image": {
+          "src": "/imgs/bg/tree.jpg",
+          "alt": "hero"
+        }
+      },
+      "tiktok-analyzer": {
+        "block": "tiktok-analyzer",
+        "id": "tiktok-analyzer",
+        "title": "Analyze TikTok Videos",
+        "label": "AI-Powered Analysis",
+        "description": "Paste a TikTok video URL to get AI-driven deep analysis and insights",
+        "items": [
+          {
+            "title": "Performance Metrics",
+            "description": "Get detailed views, likes, comments, and share statistics"
+          },
+          {
+            "title": "Content Analysis",
+            "description": "AI analyzes video content, trends, and engagement patterns"
+          },
+          {
+            "title": "Actionable Insights",
+            "description": "Receive recommendations to improve your content strategy"
+          }
+        ]
+      },
+      "features": {
+        "id": "features",
+        "title": "Platform Features",
+        "description": "Everything you need to analyze and understand TikTok content",
+        "items": [
+          {
+            "title": "Video Analysis",
+            "description": "Deep analysis of any TikTok video with AI-powered insights",
+            "icon": "RiVideoLine"
+          },
+          {
+            "title": "Trend Discovery",
+            "description": "Discover trending videos and content patterns",
+            "icon": "RiFireLine"
+          },
+          {
+            "title": "Performance Tracking",
+            "description": "Track video performance metrics over time",
+            "icon": "RiLineChartLine"
+          },
+          {
+            "title": "Content Insights",
+            "description": "Get AI-generated insights about content strategy",
+            "icon": "RiLightbulbLine"
+          },
+          {
+            "title": "Export Reports",
+            "description": "Export analysis data to Feishu or other platforms",
+            "icon": "RiFileDownloadLine"
+          },
+          {
+            "title": "API Access",
+            "description": "Integrate analysis capabilities into your workflow",
+            "icon": "RiCodeLine"
+          }
+        ]
+      },
+      "stats": {
+        "id": "stats",
+        "title": "Platform Statistics",
+        "description": "Trusted by content creators and marketers",
+        "items": [
+          {
+            "title": "10K+",
+            "description": "Videos Analyzed"
+          },
+          {
+            "title": "500+",
+            "description": "Active Users"
+          },
+          {
+            "title": "99%",
+            "description": "Accuracy Rate"
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "faq": {
+        "id": "faq",
+        "title": "Frequently Asked Questions",
+        "description": "Have questions? We have answers.",
+        "items": [
+          {
+            "question": "What is TikTok Video Analyzer?",
+            "answer": "TikTok Video Analyzer is an AI-powered platform that helps you analyze TikTok videos, understand trends, and get insights to improve your content strategy."
+          },
+          {
+            "question": "How does the analysis work?",
+            "answer": "Simply paste a TikTok video URL and our AI will analyze the video content, extract performance metrics, and provide actionable insights within seconds."
+          },
+          {
+            "question": "Is it free to use?",
+            "answer": "Yes! Basic video analysis is free for all users. Premium features may require a subscription in the future."
+          },
+          {
+            "question": "Can I export the analysis results?",
+            "answer": "Yes, you can export analysis results to various formats including Feishu documents for easy sharing and collaboration."
+          },
+          {
+            "question": "What data do you collect?",
+            "answer": "We only collect publicly available video information for analysis. We do not store personal data or require TikTok account access."
+          }
+        ]
+      },
+      "cta": {
+        "id": "cta",
+        "title": "Start Analyzing TikTok Videos",
+        "description": "Join thousands of creators using AI-powered insights.",
+        "buttons": [
+          {
+            "title": "Get Started Free",
+            "url": "#tiktok-analyzer",
+            "target": "_self",
+            "icon": "Zap"
+          },
+          {
+            "title": "View Documentation",
+            "url": "/docs",
+            "target": "_blank",
+            "variant": "outline",
+            "icon": "BookOpenText"
+          }
+        ],
+        "className": "bg-muted"
+      }
+    }
+  }
+}

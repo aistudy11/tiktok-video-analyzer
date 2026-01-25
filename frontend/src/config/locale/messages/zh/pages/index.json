@@ -1,0 +1,168 @@
+{
+  "page": {
+    "show_sections": [
+      "hero",
+      "tiktok-analyzer",
+      "features",
+      "stats",
+      "faq",
+      "cta"
+    ],
+    "sections": {
+      "hero": {
+        "id": "hero",
+        "title": "TikTok 视频分析器",
+        "highlight_text": "分析器",
+        "description": "AI 驱动的 TikTok 视频分析平台<br/>发现趋势、分析表现、获取洞察",
+        "tip": "🚀 所有用户免费使用",
+        "buttons": [
+          {
+            "title": "开始分析",
+            "icon": "BarChart3",
+            "url": "#tiktok-analyzer",
+            "target": "_self",
+            "variant": "default"
+          },
+          {
+            "title": "查看热门",
+            "icon": "TrendingUp",
+            "url": "/tiktok-trending",
+            "target": "_self",
+            "variant": "outline"
+          }
+        ],
+        "show_avatars": false,
+        "background_image": {
+          "src": "/imgs/bg/tree.jpg",
+          "alt": "hero"
+        }
+      },
+      "tiktok-analyzer": {
+        "block": "tiktok-analyzer",
+        "id": "tiktok-analyzer",
+        "title": "分析 TikTok 视频",
+        "label": "AI 驱动分析",
+        "description": "粘贴 TikTok 视频链接，获取 AI 驱动的深度分析和洞察",
+        "items": [
+          {
+            "title": "性能指标",
+            "description": "获取详细的播放量、点赞、评论和分享统计"
+          },
+          {
+            "title": "内容分析",
+            "description": "AI 分析视频内容、趋势和互动模式"
+          },
+          {
+            "title": "可行洞察",
+            "description": "获得改善内容策略的建议"
+          }
+        ]
+      },
+      "features": {
+        "id": "features",
+        "title": "平台功能",
+        "description": "分析和理解 TikTok 内容所需的一切",
+        "items": [
+          {
+            "title": "视频分析",
+            "description": "AI 驱动的任意 TikTok 视频深度分析",
+            "icon": "RiVideoLine"
+          },
+          {
+            "title": "趋势发现",
+            "description": "发现热门视频和内容模式",
+            "icon": "RiFireLine"
+          },
+          {
+            "title": "性能跟踪",
+            "description": "跟踪视频性能指标变化",
+            "icon": "RiLineChartLine"
+          },
+          {
+            "title": "内容洞察",
+            "description": "获取 AI 生成的内容策略建议",
+            "icon": "RiLightbulbLine"
+          },
+          {
+            "title": "导出报告",
+            "description": "将分析数据导出到飞书或其他平台",
+            "icon": "RiFileDownloadLine"
+          },
+          {
+            "title": "API 访问",
+            "description": "将分析能力集成到您的工作流程",
+            "icon": "RiCodeLine"
+          }
+        ]
+      },
+      "stats": {
+        "id": "stats",
+        "title": "平台统计",
+        "description": "受内容创作者和营销人员信赖",
+        "items": [
+          {
+            "title": "10K+",
+            "description": "已分析视频"
+          },
+          {
+            "title": "500+",
+            "description": "活跃用户"
+          },
+          {
+            "title": "99%",
+            "description": "准确率"
+          }
+        ],
+        "className": "bg-muted"
+      },
+      "faq": {
+        "id": "faq",
+        "title": "常见问题",
+        "description": "有问题？我们有答案。",
+        "items": [
+          {
+            "question": "什么是 TikTok 视频分析器？",
+            "answer": "TikTok 视频分析器是一个 AI 驱动的平台，帮助您分析 TikTok 视频、了解趋势，并获得洞察以改善您的内容策略。"
+          },
+          {
+            "question": "分析是如何工作的？",
+            "answer": "只需粘贴 TikTok 视频链接，我们的 AI 将在几秒钟内分析视频内容、提取性能指标，并提供可行的洞察。"
+          },
+          {
+            "question": "使用免费吗？",
+            "answer": "是的！基础视频分析对所有用户免费。高级功能未来可能需要订阅。"
+          },
+          {
+            "question": "我可以导出分析结果吗？",
+            "answer": "是的，您可以将分析结果导出为多种格式，包括飞书文档，便于分享和协作。"
+          },
+          {
+            "question": "你们收集什么数据？",
+            "answer": "我们仅收集公开可用的视频信息进行分析。我们不存储个人数据，也不需要 TikTok 账户访问权限。"
+          }
+        ]
+      },
+      "cta": {
+        "id": "cta",
+        "title": "开始分析 TikTok 视频",
+        "description": "加入数千名使用 AI 洞察的创作者。",
+        "buttons": [
+          {
+            "title": "免费开始",
+            "url": "#tiktok-analyzer",
+            "target": "_self",
+            "icon": "Zap"
+          },
+          {
+            "title": "查看文档",
+            "url": "/docs",
+            "target": "_blank",
+            "variant": "outline",
+            "icon": "BookOpenText"
+          }
+        ],
+        "className": "bg-muted"
+      }
+    }
+  }
+}

@@ -63,3 +63,14 @@ Thumbs.db
 celerybeat-schedule
 celerybeat.pid
 dokploy-env.txt
+
+# Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/.turbo/
+frontend/out/
+frontend/.pnpm-store/
+
+# Backend
+backend/__pycache__/
+backend/**/__pycache__/

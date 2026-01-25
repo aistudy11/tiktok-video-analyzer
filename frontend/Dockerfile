@@ -8,8 +8,9 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 # Note: --ignore-scripts to skip postinstall (fumadocs-mdx needs source files which aren't copied yet)
-COPY package.json pnpm-lock.yaml* source.config.ts next.config.mjs ./
-RUN pnpm i --frozen-lockfile --ignore-scripts
+# Copy tsconfig.json for path alias resolution
+COPY package.json pnpm-lock.yaml* source.config.ts next.config.mjs tsconfig.json ./
+RUN pnpm i --frozen-lockfile --ignore-scripts --shamefully-hoist
 
 # Rebuild the source code only when needed
 FROM deps AS builder

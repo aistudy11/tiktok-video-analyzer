@@ -106,8 +106,10 @@ export function TiktokAnalyzer({
         const response = await fetch(`/api/tiktok/status?task_id=${taskId}`);
         const data = await response.json();
 
+        // Update result with latest status
+        setResult(data);
+
         if (data.status === 'completed') {
-          setResult(data);
           return;
         } else if (data.status === 'failed') {
           setError(data.error || '分析失败');

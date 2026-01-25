@@ -1,15 +1,22 @@
 FROM node:20-alpine AS builder
 
-# Install dependencies
-RUN apk add --no-cache libc6-compat && yarn global add pnpm
+# Install dependencies and enable corepack for pnpm
+RUN apk add --no-cache libc6-compat && \
+    corepack enable && \
+    corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
 # Copy all files first (ensures src is available for any install scripts)
 COPY . .
 
-# Install dependencies with shamefully-hoist to flatten node_modules
-RUN pnpm i --frozen-lockfile --shamefully-hoist
+# Debug: Verify critical files exist
+RUN echo "=== Verifying source files ===" && \
+    ls -la src/shared/lib/ && \
+    cat src/shared/lib/utils.ts
+
+# Install dependencies (shamefully-hoist is in .npmrc)
+RUN pnpm i --frozen-lockfile
 
 # Build the application
 RUN pnpm build

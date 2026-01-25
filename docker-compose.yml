@@ -18,12 +18,12 @@ services:
     networks:
       - app-network
 
-  # FastAPI 后端
-  backend:
+  # FastAPI 后端 (Dokploy 需要服务名为 gateway)
+  gateway:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    hostname: backend
+    hostname: gateway
     ports:
       - "8000:8000"
     volumes:
@@ -124,7 +124,7 @@ services:
       - AUTH_GITHUB_SECRET=${AUTH_GITHUB_SECRET}
       - NEXT_PUBLIC_AUTH_GITHUB_ENABLED=${NEXT_PUBLIC_AUTH_GITHUB_ENABLED:-true}
       # 后端 API
-      - BACKEND_API_URL=http://backend:8000
+      - BACKEND_API_URL=http://gateway:8000
       # 应用配置
       - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME:-TikTok视频分析器}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
@@ -134,7 +134,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      - gateway
     restart: always
     networks:
       - app-network

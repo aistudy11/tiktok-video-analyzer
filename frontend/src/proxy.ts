@@ -9,6 +9,11 @@ const intlMiddleware = createIntlMiddleware(routing);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Ignore webpack HMR requests (Turbopack doesn't use this endpoint)
+  if (pathname === '/__webpack_hmr') {
+    return new NextResponse(null, { status: 204 });
+  }
+
   // Handle internationalization first
   const intlResponse = intlMiddleware(request);
 

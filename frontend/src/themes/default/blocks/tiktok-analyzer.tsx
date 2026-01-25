@@ -11,14 +11,29 @@ import { Section } from '@/shared/types/blocks/landing';
 interface AnalysisResult {
   task_id: string;
   status: string;
+  progress?: number;
+  message?: string;
+  feishu_record_id?: string;
   result?: {
-    title?: string;
+    video_title?: string;
     author?: string;
-    views?: number;
-    likes?: number;
-    comments?: number;
-    shares?: number;
-    analysis?: string;
+    duration?: number;
+    description?: string;
+    hashtags?: string[];
+    ai_analysis?: string;
+    content_summary?: string;
+    key_topics?: string[];
+    sentiment?: string;
+    engagement_prediction?: string;
+    recommendations?: string[];
+    raw_metadata?: {
+      title?: string;
+      author?: string;
+      likes?: number;
+      comments?: number;
+      shares?: number;
+      views?: number;
+    };
   };
 }
 
@@ -180,33 +195,73 @@ export function TiktokAnalyzer({
           {/* Result */}
           {result && (
             <div className="mt-6 space-y-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>任务 ID: {result.task_id}</span>
-                <span className={cn(
-                  'px-2 py-0.5 rounded-full text-xs font-medium',
-                  result.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                  result.status === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                  'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                )}>
-                  {result.status === 'completed' ? '已完成' :
-                   result.status === 'pending' ? '处理中' : '失败'}
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>任务 ID: {result.task_id}</span>
+                  <span className={cn(
+                    'px-2 py-0.5 rounded-full text-xs font-medium',
+                    result.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                    result.status === 'failed' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                    'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                  )}>
+                    {result.status === 'completed' ? '已完成' :
+                     result.status === 'downloading' ? '下载中' :
+                     result.status === 'analyzing' ? '分析中' :
+                     result.status === 'syncing' ? '同步中' :
+                     result.status === 'failed' ? '失败' : '排队中'}
+                  </span>
+                </div>
+                {result.progress !== undefined && result.status !== 'completed' && result.status !== 'failed' && (
+                  <span className="text-sm text-muted-foreground">{result.progress}%</span>
+                )}
               </div>
+              {result.message && result.status !== 'completed' && (
+                <p className="text-sm text-muted-foreground">{result.message}</p>
+              )}
 
               {result.result && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <StatCard icon={Eye} label="播放量" value={result.result.views} />
-                  <StatCard icon={Heart} label="点赞" value={result.result.likes} />
-                  <StatCard icon={MessageCircle} label="评论" value={result.result.comments} />
-                  <StatCard icon={Share2} label="分享" value={result.result.shares} />
+                <>
+                  {/* Video Title */}
+                  {result.result.video_title && (
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <span className="text-sm text-muted-foreground">视频标题: </span>
+                      <span className="font-medium">{result.result.video_title}</span>
+                    </div>
+                  )}
+
+                  {/* Stats from raw_metadata */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <StatCard icon={Eye} label="播放量" value={result.result.raw_metadata?.views} />
+                    <StatCard icon={Heart} label="点赞" value={result.result.raw_metadata?.likes} />
+                    <StatCard icon={MessageCircle} label="评论" value={result.result.raw_metadata?.comments} />
+                    <StatCard icon={Share2} label="分享" value={result.result.raw_metadata?.shares} />
+                  </div>
+                </>
+              )}
+
+              {/* Feishu Link */}
+              {result.feishu_record_id && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <span className="text-sm text-green-700 dark:text-green-400">
+                    ✓ 已同步到飞书多维表格 (记录 ID: {result.feishu_record_id})
+                  </span>
                 </div>
               )}
 
-              {result.result?.analysis && (
+              {result.result?.ai_analysis && (
                 <div className="p-4 bg-muted rounded-lg">
                   <h4 className="font-semibold mb-2">AI 分析</h4>
                   <p className="text-muted-foreground text-sm whitespace-pre-wrap">
-                    {result.result.analysis}
+                    {result.result.ai_analysis}
+                  </p>
+                </div>
+              )}
+
+              {result.result?.content_summary && (
+                <div className="p-4 bg-muted rounded-lg">
+                  <h4 className="font-semibold mb-2">内容摘要</h4>
+                  <p className="text-muted-foreground text-sm whitespace-pre-wrap">
+                    {result.result.content_summary}
                   </p>
                 </div>
               )}

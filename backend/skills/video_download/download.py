@@ -50,6 +50,7 @@ class TikTokDownloader:
             "description": "",
             "duration": 0,
             "hashtags": [],
+            "views": 0,
             "likes": 0,
             "comments": 0,
             "shares": 0,
@@ -104,7 +105,7 @@ class TikTokDownloader:
 
             # Try to get engagement stats
             try:
-                stats_elements = page.query_selector_all('[data-e2e="like-count"], [data-e2e="comment-count"], [data-e2e="share-count"]')
+                stats_elements = page.query_selector_all('[data-e2e="like-count"], [data-e2e="comment-count"], [data-e2e="share-count"], [data-e2e="video-views"], [data-e2e="browse-video-count"]')
                 for elem in stats_elements:
                     text = elem.inner_text().strip()
                     # Convert K, M suffixes
@@ -115,6 +116,9 @@ class TikTokDownloader:
                     elif "M" in text:
                         multiplier = 1000000
                         text = text.replace("M", "")
+                    elif "B" in text:
+                        multiplier = 1000000000
+                        text = text.replace("B", "")
                     try:
                         value = int(float(text) * multiplier)
                         e2e_attr = elem.get_attribute("data-e2e")
@@ -124,6 +128,8 @@ class TikTokDownloader:
                             metadata["comments"] = value
                         elif "share" in e2e_attr:
                             metadata["shares"] = value
+                        elif "view" in e2e_attr or "browse" in e2e_attr:
+                            metadata["views"] = value
                     except (ValueError, TypeError):
                         pass
             except Exception:
@@ -241,6 +247,11 @@ class TikTokDownloader:
                                 "author": video_data.get("author", {}).get("unique_id", ""),
                                 "duration": video_data.get("duration", 0),
                                 "description": video_data.get("title", ""),
+                                "views": video_data.get("play_count", 0),
+                                "likes": video_data.get("digg_count", 0),
+                                "comments": video_data.get("comment_count", 0),
+                                "shares": video_data.get("share_count", 0),
+                                "hashtags": [tag.get("title", "") for tag in video_data.get("hashtags", []) if tag.get("title")],
                             }
 
                         if video_url and self._download_video_file(video_url, output_path):

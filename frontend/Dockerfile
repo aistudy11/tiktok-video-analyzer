@@ -1,33 +1,21 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine AS builder
 
-# Install dependencies only when needed
-FROM base AS deps
+# Install dependencies
 RUN apk add --no-cache libc6-compat && yarn global add pnpm
 
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-# Note: --ignore-scripts to skip postinstall (fumadocs-mdx needs source files which aren't copied yet)
-# Copy tsconfig.json for path alias resolution
-COPY package.json pnpm-lock.yaml* source.config.ts next.config.mjs tsconfig.json ./
-RUN pnpm i --frozen-lockfile --ignore-scripts --shamefully-hoist
-
-# Rebuild the source code only when needed
-FROM deps AS builder
-
-WORKDIR /app
-
-# Copy all source files
+# Copy all files first (ensures src is available for any install scripts)
 COPY . .
 
-# Regenerate .source directory (fumadocs-mdx needs content files which weren't available during postinstall)
-RUN pnpm exec fumadocs-mdx
+# Install dependencies with shamefully-hoist to flatten node_modules
+RUN pnpm i --frozen-lockfile --shamefully-hoist
 
 # Build the application
 RUN pnpm build
 
-# Production image, copy all the files and run next
-FROM base AS runner
+# Production image
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs && \
@@ -43,10 +31,8 @@ USER nextjs
 
 EXPOSE 3000
 
-# set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# server.js is created by next build from the standalone output
 CMD ["node", "server.js"]

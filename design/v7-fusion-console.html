@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster V7 - Fusion Console | 钛金版</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Outfit: Premium Geometric Sans (Like Spotify/Linear) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'], // Stronger design feel
+                    },
+                    colors: {
+                        background: "#050505",
+                        surface: "#0A0A0A",
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            color: #F8FAFC;
+            overflow-x: hidden;
+            background-color: #050505;
+        }
+
+        /* V7 Background: Titanium Texture */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(90%) brightness(0.25) contrast(1.1);
+            transform: scale(1.05);
+        }
+
+        .ambient-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.95) 100%);
+        }
+
+        /* Glass Panel */
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.5);
+            /* Slightly darker for better text contrast */
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .scene-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .scene-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            /* More visible hover */
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateX(4px);
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 24px;
+            top: 40px;
+            bottom: -20px;
+            width: 1px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+        }
+
+        .input-glow:focus-within {
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .node-number {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen relative selection:bg-white/20 font-sans">
+
+    <div class="ambient-bg"></div>
+    <div class="ambient-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-xl">
+        <div class="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-white/10 border border-white/10 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <!-- Outfit font for logo -->
+                <span class="font-display font-bold text-lg tracking-tight text-white">Poster_V7</span>
+            </div>
+
+            <div class="flex items-center gap-8">
+                <div class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-400">
+                    <a href="#" class="hover:text-white transition-colors">Analyzer</a>
+                    <a href="#" class="hover:text-white transition-colors">Templates</a>
+                </div>
+                <div class="pl-6 border-l border-white/10 flex items-center gap-4">
+                    <button class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Log In</button>
+                    <button
+                        class="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-200 transition-all">Get
+                        Started</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 pt-28 pb-20 max-w-[1280px] mx-auto px-6">
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto text-center mb-20 animate-float">
+            <!-- Increased font weight to 800/600 for readability/impact -->
+            <h1 class="text-6xl md:text-7xl font-display font-extrabold tracking-tight mb-8 leading-[1.05]">
+                <span class="text-white">Decode the</span> <br>
+                <span class="text-zinc-500">Viral Formula.</span>
+            </h1>
+
+            <div class="relative max-w-2xl mx-auto group">
+                <div
+                    class="absolute -inset-0.5 bg-gradient-to-r from-zinc-500 to-cyan-500 rounded-2xl blur opacity-10 group-hover:opacity-30 transition duration-500">
+                </div>
+                <!-- Removed font-light, using regular weight for input -->
+                <div
+                    class="relative flex items-center bg-[#0A0A0C]/80 backdrop-blur-xl rounded-xl border border-white/10 p-2 shadow-2xl input-glow transition-all duration-300">
+                    <div class="pl-4 pr-3 text-white/40">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                        </svg>
+                    </div>
+                    <input type="text"
+                        class="flex-1 bg-transparent text-white placeholder-zinc-500 text-lg outline-none font-medium h-12"
+                        placeholder="Paste TikTok video URL here..." value="https://tiktok.com/@user/video/7382910392">
+                    <button
+                        class="bg-white hover:bg-zinc-200 text-black px-6 h-12 rounded-lg font-bold text-sm transition-all flex items-center gap-2">
+                        Analyze
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="relative h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-16"></div>
+
+        <!-- Editor Interface -->
+        <div class="grid lg:grid-cols-12 gap-8 items-start">
+
+            <!-- Left: Stats -->
+            <div class="lg:col-span-4 space-y-6 sticky top-24">
+                <div class="glass-panel rounded-2xl overflow-hidden relative border border-white/10">
+                    <div class="relative aspect-[9/16] bg-black/60">
+                        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop"
+                            class="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div
+                                class="w-16 h-16 rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center border border-white/20 cursor-pointer hover:bg-white/20 transition-all hover:scale-105">
+                                <svg class="w-6 h-6 text-white translate-x-0.5 bg-black/50 rounded-full"
+                                    fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div
+                        class="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-l-2 border-l-white">
+                        <span
+                            class="text-[11px] text-zinc-400 font-display font-bold uppercase tracking-widest mb-1">Views</span>
+                        <span class="text-xl font-bold text-white">1.2M</span>
+                    </div>
+                    <div
+                        class="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-l-2 border-l-cyan-400">
+                        <span
+                            class="text-[11px] text-zinc-400 font-display font-bold uppercase tracking-widest mb-1">Likes</span>
+                        <span class="text-xl font-bold text-white">85K</span>
+                    </div>
+                    <div
+                        class="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-l-2 border-l-blue-500">
+                        <span
+                            class="text-[11px] text-zinc-400 font-display font-bold uppercase tracking-widest mb-1">Shares</span>
+                        <span class="text-xl font-bold text-white">3.5K</span>
+                    </div>
+                    <div
+                        class="glass-panel p-4 rounded-xl flex flex-col items-center justify-center border-l-2 border-l-zinc-500">
+                        <span
+                            class="text-[11px] text-zinc-400 font-display font-bold uppercase tracking-widest mb-1">CTR</span>
+                        <span class="text-xl font-bold text-white">4.2%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Editor -->
+            <div class="lg:col-span-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-display font-bold text-white flex items-center gap-3">
+                        Script Breakdown
+                    </h2>
+                    <div class="flex gap-3">
+                        <button
+                            class="px-5 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-white/5">
+                            Generate Video
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-0 relative">
+
+                    <!-- 1. Hook -->
+                    <div class="relative pl-12 pb-8 group">
+                        <div class="timeline-line"></div>
+                        <div class="absolute left-0 top-0 w-12 flex flex-col items-center">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-[#111] border border-white/20 flex items-center justify-center text-white text-lg font-bold z-10 node-number">
+                                01</div>
+                            <span
+                                class="text-[10px] font-mono text-zinc-500 mt-2 rotate-90 origin-center translate-y-2 font-bold">0-3s</span>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border-l-[3px] border-l-white scene-card">
+                            <div class="flex justify-between items-center mb-4">
+                                <span
+                                    class="px-3 py-1.5 rounded bg-white/10 text-white text-xs font-bold uppercase tracking-wider font-display">Hook</span>
+                                <button
+                                    class="text-xs text-zinc-500 hover:text-white transition-colors font-medium">Edit</button>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <span
+                                        class="block text-[10px] font-display font-bold text-zinc-500 mb-2 uppercase tracking-wide">Audio
+                                        / Script</span>
+                                    <p class="text-[15px] text-zinc-100 font-normal leading-relaxed">"Do you know why
+                                        this product is selling out everywhere right now?"</p>
+                                </div>
+                                <div>
+                                    <span
+                                        class="block text-[10px] font-display font-bold text-zinc-500 mb-2 uppercase tracking-wide">Visual
+                                        Direction</span>
+                                    <p class="text-sm text-zinc-400 font-normal leading-relaxed">Extreme close-up.
+                                        Background bokeh. Handheld camera movement.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Pain Point -->
+                    <div class="relative pl-12 pb-8 group">
+                        <div class="timeline-line"></div>
+                        <div class="absolute left-0 top-0 w-12 flex flex-col items-center">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-[#111] border border-white/20 flex items-center justify-center text-white text-lg font-bold z-10 node-number">
+                                02</div>
+                            <span
+                                class="text-[10px] font-mono text-zinc-500 mt-2 rotate-90 origin-center translate-y-2 font-bold">3-10s</span>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border-l-[3px] border-l-zinc-500 scene-card">
+                            <div class="flex justify-between items-center mb-4">
+                                <span
+                                    class="px-3 py-1.5 rounded bg-zinc-800 text-zinc-300 text-xs font-bold uppercase tracking-wider font-display">Pain
+                                    Point</span>
+                            </div>
+                            <p class="text-[15px] text-zinc-100 font-normal mb-2">"Summer heat driving you crazy?
+                                Regular fans are just too bulky to carry."</p>
+                            <p class="text-xs text-zinc-500 font-mono">Visual: Person sweating, struggling with old fan.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Solution -->
+                    <div class="relative pl-12 pb-8 group">
+                        <div class="timeline-line"></div>
+                        <div class="absolute left-0 top-0 w-12 flex flex-col items-center">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-[#111] border border-white/20 flex items-center justify-center text-white text-lg font-bold z-10 node-number">
+                                03</div>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border-l-[3px] border-l-cyan-500 scene-card">
+                            <div class="flex justify-between items-center mb-4">
+                                <span
+                                    class="px-3 py-1.5 rounded bg-cyan-950/40 text-cyan-400 text-xs font-bold uppercase tracking-wider font-display">Solution</span>
+                            </div>
+                            <p class="text-[15px] text-zinc-100 font-normal mb-2">"This portable mini-fan fits in your
+                                pocket but has tornado power!"</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>

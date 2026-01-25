@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster V5 - Galactic | 星际深空版</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050505;
+            color: #E0E0E0;
+            overflow-x: hidden;
+        }
+
+        /* Define Keyframes explicitly for reliability */
+        @keyframes cosmic-zoom {
+            0% {
+                transform: scale(1.0) translate(0, 0);
+            }
+
+            100% {
+                transform: scale(1.15) translate(-1%, -1%);
+            }
+        }
+
+        @keyframes float-slow {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* 
+           V5: Galactic Background
+           High-res nebula/milky way image.
+        */
+        .galactic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            /* Using a stunning purple/blue nebula image */
+            background-image: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            /* Animation applied directly */
+            animation: cosmic-zoom 60s linear infinite alternate;
+        }
+
+        .animate-float {
+            animation: float-slow 6s ease-in-out infinite;
+        }
+
+        .box-shadow-glow {
+            box-shadow: 0 0 10px #a855f7;
+            animation: pulse-glow 3s infinite;
+        }
+
+        /* 
+           Vignette Overlay 
+           Darkens edges to focus attention on center content
+           and ensures text readability against bright stars
+        */
+        .vignette-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+            backdrop-filter: blur(2px);
+            /* Slight blur to separate UI from stars */
+        }
+
+        /* 
+           Stardust Glass 
+           More transparent, finer borders
+        */
+        .glass-panel {
+            background: rgba(13, 13, 18, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-glow:focus-within {
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3), 0 0 50px rgba(139, 92, 246, 0.4);
+            /* Purple glow for galaxy */
+            border-color: rgba(167, 139, 250, 0.5);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 24px;
+            top: 40px;
+            bottom: -20px;
+            width: 1px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+        }
+
+        /* Text readability on space background */
+        h1,
+        h2,
+        h3 {
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen relative selection:bg-purple-500/30">
+
+    <div class="galactic-bg"></div>
+    <div class="vignette-overlay"></div>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/10 backdrop-blur-md">
+        <div class="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <!-- Galaxy text style -->
+                <span class="font-bold text-lg tracking-tight text-white/90">
+                    Nebula<span class="text-purple-400">AI</span>
+                </span>
+            </div>
+
+            <div class="flex items-center gap-6 text-sm font-medium text-white/60">
+                <a href="#" class="hover:text-purple-300 transition-colors">Mission</a>
+                <button
+                    class="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-4 py-2 rounded-full text-xs font-bold transition-all backdrop-blur-sm">
+                    LAUNCH CONSOLE
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-32 pb-20 max-w-[1280px] mx-auto px-6">
+
+        <!-- Hero -->
+        <section class="max-w-4xl mx-auto text-center mb-28">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-900/30 border border-purple-500/30 backdrop-blur-md text-xs font-medium text-purple-200 mb-8 animate-float">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-400 box-shadow-glow"></span>
+                Starlight Engine v3.0
+            </div>
+
+            <h1 class="text-7xl font-bold tracking-tight mb-8 leading-none">
+                <span class="text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40">Explore
+                    the</span> <br>
+                <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300">Viral
+                    Universe.</span>
+            </h1>
+
+            <p class="text-blue-100/60 text-lg mb-12 max-w-xl mx-auto font-light tracking-wide">
+                Harness the power of AI to navigate the infinite content cosmos.
+            </p>
+
+            <!-- Search Bar -->
+            <div class="relative max-w-2xl mx-auto group">
+                <div
+                    class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur-xl opacity-30 group-hover:opacity-60 transition duration-700">
+                </div>
+
+                <div
+                    class="relative flex items-center bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-full border border-white/10 p-2 pl-6 input-glow transition-all duration-300">
+                    <input type="text"
+                        class="flex-1 bg-transparent text-white placeholder-white/30 text-lg outline-none font-medium h-12"
+                        placeholder="Paste TikTok video URL..." value="https://tiktok.com/@user/video/7382910392">
+                    <button
+                        class="bg-white text-black px-8 h-12 rounded-full font-bold text-sm hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        <span>Ignite</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Glass Stack Layout -->
+        <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+            <!-- Left Side -->
+            <div class="lg:col-span-4 space-y-4">
+                <div class="glass-panel p-2 rounded-2xl">
+                    <div class="relative aspect-[9/16] bg-black/50 rounded-xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop"
+                            class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="flex items-center gap-2 text-xs text-green-400 font-mono mb-2">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                                ANALYSIS ONLINE
+                            </div>
+                            <div class="h-1 w-full bg-white/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-400 w-3/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl border-t-2 border-t-purple-500/50">
+                    <h3 class="text-xs font-mono uppercase text-purple-300 mb-4 tracking-widest">Core Metrics</h3>
+                    <div class="grid grid-cols-2 gap-y-6">
+                        <div>
+                            <div class="text-2xl font-bold text-white">1.2M</div>
+                            <div class="text-xs text-white/40">Views</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-white">12%</div>
+                            <div class="text-xs text-white/40">Engagement</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Editor -->
+            <div class="lg:col-span-8">
+                <div class="glass-panel rounded-3xl p-8 min-h-[600px] relative overflow-hidden">
+                    <!-- Decor -->
+                    <div
+                        class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none">
+                    </div>
+
+                    <div class="flex items-center justify-between mb-8 relative z-10">
+                        <h2 class="text-xl font-bold text-white">Script Timeline</h2>
+                        <div class="flex gap-3">
+                            <button
+                                class="p-2 rounded-full border border-white/10 hover:bg-white/10 text-white/60 hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                            </button>
+                            <button
+                                class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-full text-sm font-bold shadow-lg shadow-purple-600/20">
+                                Generate Video
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="relative pl-8 space-y-12 z-10">
+                        <!-- Connecting Line -->
+                        <div
+                            class="absolute left-[39px] top-4 bottom-12 w-px bg-gradient-to-b from-purple-500/50 via-purple-500/20 to-transparent">
+                        </div>
+
+                        <!-- Item 1 -->
+                        <div class="relative group">
+                            <div class="absolute -left-[45px] top-0 animate-pulse">
+                                <div class="w-2.5 h-2.5 bg-purple-400 rounded-full ring-4 ring-purple-500/20"></div>
+                            </div>
+                            <div
+                                class="bg-white/5 border border-white/5 p-5 rounded-2xl hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300">
+                                <div class="flex justify-between mb-2">
+                                    <span
+                                        class="text-xs font-bold text-purple-300 px-2 py-1 bg-purple-500/10 rounded">HOOK
+                                        (0-3s)</span>
+                                </div>
+                                <p class="text-lg text-white/90 font-medium mb-2">"Wait, I can't believe this actually
+                                    works..."</p>
+                                <p class="text-sm text-white/50 font-mono">Visual: Shocked face close-up, quick cut to
+                                    product.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="relative group">
+                            <div class="absolute -left-[45px] top-0">
+                                <div
+                                    class="w-2.5 h-2.5 bg-zinc-600 rounded-full ring-4 ring-zinc-500/10 group-hover:bg-purple-400 group-hover:ring-purple-500/20 transition-all">
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white/5 border border-white/5 p-5 rounded-2xl hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-xs font-bold text-zinc-400 px-2 py-1 bg-white/5 rounded">BODY
+                                        (3-15s)</span>
+                                </div>
+                                <p class="text-sm text-white/80 line-clamp-2">"I've been trying to find a solution for
+                                    hours, but everything..."</p>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="relative group">
+                            <div class="absolute -left-[45px] top-0">
+                                <div
+                                    class="w-2.5 h-2.5 bg-zinc-600 rounded-full ring-4 ring-zinc-500/10 group-hover:bg-purple-400 group-hover:ring-purple-500/20 transition-all">
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white/5 border border-white/5 p-5 rounded-2xl hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-xs font-bold text-zinc-400 px-2 py-1 bg-white/5 rounded">Call To
+                                        Action</span>
+                                </div>
+                                <p class="text-sm text-white/80">"Check the link in bio before it's gone."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</body>
+
+</html>

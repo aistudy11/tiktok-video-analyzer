@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跨境电商视频生成器 - V2 科技感暗色版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        border: "hsl(240 3.7% 15.9%)",
+                        input: "hsl(240 3.7% 15.9%)",
+                        ring: "hsl(240 4.9% 83.9%)",
+                        background: "hsl(240 10% 3.9%)",
+                        foreground: "hsl(0 0% 98%)",
+                        primary: {
+                            DEFAULT: "hsl(217.2 91.2% 59.8%)",
+                            foreground: "hsl(0 0% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(240 3.7% 15.9%)",
+                            foreground: "hsl(0 0% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(240 3.7% 15.9%)",
+                            foreground: "hsl(240 5% 64.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(240 3.7% 15.9%)",
+                            foreground: "hsl(0 0% 98%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(240 10% 3.9%)",
+                            foreground: "hsl(0 0% 98%)",
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-primary { box-shadow: 0 0 40px rgba(59, 130, 246, 0.15); }
+        .glow-cyan { box-shadow: 0 0 40px rgba(0, 242, 234, 0.15); }
+        .gradient-mesh {
+            background:
+                radial-gradient(at 40% 20%, hsla(217, 91%, 60%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.05) 0px, transparent 50%);
+        }
+        .scene-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .scene-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.02) 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+
+    <!-- ==================== 导航栏 ==================== -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </div>
+                <span class="font-semibold text-lg tracking-tight">VideoGen</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="#" class="text-sm text-muted-foreground hover:text-foreground transition-colors">定价</a>
+                <a href="#" class="text-sm text-muted-foreground hover:text-foreground transition-colors">登录</a>
+                <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                    开始使用
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== Hero 区域 ==================== -->
+    <section class="pt-32 pb-20 gradient-mesh">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-8">
+                <span class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
+                <span class="text-sm text-muted-foreground">TikTok 分析器已上线</span>
+            </div>
+
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight tracking-tight">
+                AI 驱动的视频分析
+                <br/>
+                <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                    让爆款可复制
+                </span>
+            </h1>
+
+            <p class="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
+                输入爆款链接，60秒生成同款脚本
+            </p>
+            <p class="text-muted-foreground max-w-xl mx-auto mb-10">
+                分析视频结构 · 提取爆款公式 · 生成带货脚本 · 一键导出
+            </p>
+
+            <div class="flex justify-center gap-4 mb-16">
+                <button class="bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium hover:bg-primary/90 transition-all glow-primary">
+                    免费分析一条视频
+                </button>
+                <button class="glass px-8 py-3.5 rounded-xl font-medium hover:bg-white/5 transition-all">
+                    查看演示
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 平台选择 ==================== -->
+    <section class="py-20">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl font-semibold mb-3">选择分析平台</h2>
+                <p class="text-muted-foreground">支持主流短视频平台</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- TikTok - 可用 -->
+                <a href="#analyzer" class="glass rounded-2xl p-6 hover:border-cyan-500/50 transition-all cursor-pointer group glow-cyan">
+                    <div class="w-14 h-14 rounded-xl bg-black flex items-center justify-center mb-4 mx-auto border border-white/10">
+                        <span class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">T</span>
+                    </div>
+                    <h3 class="font-medium text-center mb-2">TikTok</h3>
+                    <p class="text-xs text-center text-cyan-400 font-medium">可用</p>
+                </a>
+
+                <!-- YouTube -->
+                <div class="glass rounded-2xl p-6 opacity-50 cursor-not-allowed">
+                    <div class="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mb-4 mx-auto">
+                        <span class="text-2xl font-bold text-red-500">Y</span>
+                    </div>
+                    <h3 class="font-medium text-center mb-2 text-muted-foreground">YouTube</h3>
+                    <p class="text-xs text-center text-muted-foreground">即将推出</p>
+                </div>
+
+                <!-- Twitter -->
+                <div class="glass rounded-2xl p-6 opacity-50 cursor-not-allowed">
+                    <div class="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mb-4 mx-auto">
+                        <span class="text-2xl font-bold text-white">X</span>
+                    </div>
+                    <h3 class="font-medium text-center mb-2 text-muted-foreground">Twitter/X</h3>
+                    <p class="text-xs text-center text-muted-foreground">即将推出</p>
+                </div>
+
+                <!-- Instagram -->
+                <div class="glass rounded-2xl p-6 opacity-50 cursor-not-allowed">
+                    <div class="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mb-4 mx-auto">
+                        <span class="text-2xl font-bold bg-gradient-to-br from-purple-500 to-pink-500 bg-clip-text text-transparent">I</span>
+                    </div>
+                    <h3 class="font-medium text-center mb-2 text-muted-foreground">Instagram</h3>
+                    <p class="text-xs text-center text-muted-foreground">即将推出</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 分析器 ==================== -->
+    <section id="analyzer" class="py-20">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl font-semibold mb-3">TikTok 视频分析</h2>
+                <p class="text-muted-foreground">粘贴链接，AI 自动解析视频结构和爆款元素</p>
+            </div>
+
+            <!-- 输入框 -->
+            <div class="glass rounded-2xl p-2 mb-6 glow-primary">
+                <div class="flex items-center gap-3">
+                    <div class="flex-1 flex items-center gap-3 px-4">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                        <input type="text" placeholder="粘贴 TikTok 视频链接..." class="flex-1 py-4 bg-transparent outline-none text-foreground placeholder:text-muted-foreground">
+                    </div>
+                    <button class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3.5 rounded-xl font-medium hover:opacity-90 transition-opacity">
+                        开始分析
+                    </button>
+                </div>
+            </div>
+
+            <!-- 分析结果 -->
+            <div class="glass rounded-2xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <span class="font-medium">分析完成</span>
+                    </div>
+                    <button class="text-sm text-primary hover:underline">查看完整报告</button>
+                </div>
+
+                <!-- 数据统计 -->
+                <div class="grid grid-cols-4 gap-3 mb-6">
+                    <div class="stat-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold mb-1">1.2M</div>
+                        <div class="text-xs text-muted-foreground">播放量</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold mb-1">85K</div>
+                        <div class="text-xs text-muted-foreground">点赞</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold mb-1">1.2K</div>
+                        <div class="text-xs text-muted-foreground">评论</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold mb-1">3.5K</div>
+                        <div class="text-xs text-muted-foreground">分享</div>
+                    </div>
+                </div>
+
+                <!-- AI 分析 -->
+                <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span class="text-sm font-medium">AI 分析摘要</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground leading-relaxed">
+                        利用对比展示产品效果，前3秒制造悬念吸引停留。采用"问题-解决方案"结构，节奏紧凑。视频使用了流行的背景音乐...
+                    </p>
+                </div>
+            </div>
+
+            <!-- 脚本编辑器 -->
+            <div class="glass rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-semibold">带货脚本</h3>
+                    <div class="flex items-center gap-2">
+                        <button class="glass px-3 py-1.5 rounded-lg text-sm hover:bg-white/5 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            AI 优化
+                        </button>
+                        <button class="glass px-3 py-1.5 rounded-lg text-sm hover:bg-white/5 transition-colors">导出</button>
+                    </div>
+                </div>
+
+                <!-- 场景列表 - 统一风格，不用彩虹色 -->
+                <div class="space-y-3 mb-6">
+                    <!-- 场景 1 -->
+                    <div class="scene-card rounded-xl p-4 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-mono text-muted-foreground">01</span>
+                                <span class="px-2 py-0.5 rounded text-xs font-medium bg-primary/20 text-primary border border-primary/30">Hook</span>
+                                <span class="text-xs text-muted-foreground">0-3s</span>
+                            </div>
+                            <button class="text-xs text-muted-foreground hover:text-foreground">编辑</button>
+                        </div>
+                        <p class="text-sm text-foreground/90 leading-relaxed">
+                            "你知道为什么这个产品能卖爆吗？"
+                        </p>
+                        <p class="text-xs text-muted-foreground mt-2">
+                            画面：产品特写，背景虚化，手持展示
+                        </p>
+                    </div>
+
+                    <!-- 场景 2 -->
+                    <div class="scene-card rounded-xl p-4 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-mono text-muted-foreground">02</span>
+                                <span class="px-2 py-0.5 rounded text-xs font-medium bg-secondary text-muted-foreground border border-white/10">痛点</span>
+                                <span class="text-xs text-muted-foreground">3-10s</span>
+                            </div>
+                            <button class="text-xs text-muted-foreground hover:text-foreground">编辑</button>
+                        </div>
+                        <p class="text-sm text-foreground/90 leading-relaxed">
+                            "夏天出门，热到崩溃？普通风扇又大又重？"
+                        </p>
+                        <p class="text-xs text-muted-foreground mt-2">
+                            画面：烈日下汗流浃背的场景
+                        </p>
+                    </div>
+
+                    <!-- 场景 3 -->
+                    <div class="scene-card rounded-xl p-4 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-mono text-muted-foreground">03</span>
+                                <span class="px-2 py-0.5 rounded text-xs font-medium bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">方案</span>
+                                <span class="text-xs text-muted-foreground">10-20s</span>
+                            </div>
+                            <button class="text-xs text-muted-foreground hover:text-foreground">编辑</button>
+                        </div>
+                        <p class="text-sm text-foreground/90 leading-relaxed">
+                            "这款便携风扇，只有手机大小，三档风力随心调节！"
+                        </p>
+                        <p class="text-xs text-muted-foreground mt-2">
+                            画面：产品与手机对比，展示便携性
+                        </p>
+                    </div>
+
+                    <!-- 场景 4 -->
+                    <div class="scene-card rounded-xl p-4 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-mono text-muted-foreground">04</span>
+                                <span class="px-2 py-0.5 rounded text-xs font-medium bg-primary/20 text-primary border border-primary/30">CTA</span>
+                                <span class="text-xs text-muted-foreground">25-30s</span>
+                            </div>
+                            <button class="text-xs text-muted-foreground hover:text-foreground">编辑</button>
+                        </div>
+                        <p class="text-sm text-foreground/90 leading-relaxed">
+                            "点击下方链接，限时特惠只要 $9.99！"
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 添加场景 -->
+                <button class="w-full py-3 border border-dashed border-white/10 rounded-xl text-sm text-muted-foreground hover:border-primary/50 hover:text-foreground transition-all mb-6">
+                    + 添加场景
+                </button>
+
+                <!-- 生成按钮 -->
+                <button class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-4 rounded-xl font-medium hover:opacity-90 transition-opacity">
+                    生成视频脚本
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 功能特点 ==================== -->
+    <section class="py-20">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl font-semibold mb-3">核心功能</h2>
+                <p class="text-muted-foreground">从分析到生成，完整的视频创作工作流</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="glass rounded-2xl p-6 hover:border-primary/30 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-medium mb-2">AI 深度分析</h3>
+                    <p class="text-sm text-muted-foreground leading-relaxed">
+                        智能解析视频结构、文案策略、爆款原因，提取可复制的成功公式
+                    </p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 hover:border-cyan-500/30 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-medium mb-2">脚本生成</h3>
+                    <p class="text-sm text-muted-foreground leading-relaxed">
+                        自动生成分镜脚本，场景化编辑器，支持自定义调整
+                    </p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 hover:border-primary/30 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-medium mb-2">飞书同步</h3>
+                    <p class="text-sm text-muted-foreground leading-relaxed">
+                        分析结果自动同步到飞书多维表格，团队协作更高效
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Footer ==================== -->
+    <footer class="py-12 border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                    <span class="font-medium">VideoGen</span>
+                </div>
+                <p class="text-sm text-muted-foreground">© 2025 VideoGen. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

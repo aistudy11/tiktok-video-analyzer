@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster V6 - Aurora | 极光流体版</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'], // Tech font
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #000000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Explicit Keyframes for V6 */
+        @keyframes blob-bounce {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        @keyframes aurora-shift {
+            0% {
+                background-position: 0% 50%;
+                opacity: 0.8;
+            }
+
+            50% {
+                background-position: 100% 50%;
+                opacity: 1;
+            }
+
+            100% {
+                background-position: 0% 50%;
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fade-in-up {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 
+           V6: Aurora Background
+           Pure CSS Gradients, perfectly smooth, no pixelation.
+        */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: #000;
+            overflow: hidden;
+        }
+
+        /* Animated Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            /* Heavy blur for soft blends */
+            opacity: 0.6;
+            animation: blob-bounce 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: #4f46e5;
+            animation-delay: 0s;
+        }
+
+        /* Indigo */
+        .blob-2 {
+            top: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: #06b6d4;
+            animation-delay: -2s;
+        }
+
+        /* Cyan */
+        .blob-3 {
+            bottom: -20%;
+            left: 20%;
+            width: 70vw;
+            height: 70vw;
+            background: #7c3aed;
+            animation-delay: -4s;
+            opacity: 0.4;
+        }
+
+        /* Violet */
+
+        /* Noise Overlay for texture */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        /* 
+           Clean Glass
+           Thinner, lighter borders. More "Apple/Vercel" feel.
+        */
+        .glass-clean {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            /* Finer border */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .glass-clean:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Typography */
+        h1.hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(to bottom right, #fff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.04em;
+        }
+
+        .input-minimal {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .input-minimal:focus-within {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(6, 182, 212, 0.5);
+            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
+        }
+
+        .animate-fade-in {
+            animation: fade-in-up 1s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen relative selection:bg-cyan-500/30">
+
+    <div class="aurora-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div class="noise-overlay"></div>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/5 backdrop-blur-xl">
+        <div class="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="font-display font-bold text-xl tracking-tighter">video_gen</span>
+                <span
+                    class="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-bold uppercase tracking-wider text-white/60">Beta
+                    v6</span>
+            </div>
+
+            <div class="flex items-center gap-6 text-sm font-medium text-white/70">
+                <a href="#" class="hover:text-white transition-colors">Documentation</a>
+                <a href="#" class="hover:text-white transition-colors">Enterprise</a>
+                <div class="w-px h-4 bg-white/20"></div>
+                <button class="text-white hover:text-cyan-400 font-medium">Log In</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-32 pb-20 max-w-[1000px] mx-auto px-6">
+
+        <!-- Hero: Centered and Minimal -->
+        <section class="text-center mb-20 animate-fade-in">
+            <h1 class="hero-title text-7xl md:text-8xl font-bold mb-6 leading-[0.9]">
+                Turn views into<br>revenue.
+            </h1>
+            <p class="text-xl text-white/50 max-w-2xl mx-auto mb-10 font-light">
+                The AI co-pilot for high-performance e-commerce video scripts.
+            </p>
+
+            <!-- Ultra Minimal Input -->
+            <div class="max-w-xl mx-auto">
+                <div
+                    class="input-minimal rounded-2xl p-2 flex items-center pl-4 pr-2 hover:scale-[1.01] transition-transform duration-300">
+                    <svg class="w-5 h-5 text-zinc-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    <input type="text"
+                        class="flex-1 bg-transparent text-white placeholder-zinc-500 outline-none h-10 font-medium"
+                        placeholder="tiktok.com/@creator/video/..." value="">
+                    <button
+                        class="bg-white text-black px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-200 transition-colors">
+                        Start
+                    </button>
+                </div>
+                <div class="mt-4 flex justify-center gap-6 text-xs text-white/30 font-medium tracking-wide">
+                    <span>TIKTOK</span>
+                    <span>•</span>
+                    <span>YOUTUBE SHORTS</span>
+                    <span>•</span>
+                    <span>REELS</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- The "Stack" Interface -->
+        <div class="glass-clean rounded-3xl p-1 border border-white/10 shadow-2xl animate-fade-in"
+            style="animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards;">
+            <div class="bg-black/40 rounded-[20px] p-8 min-h-[500px] grid md:grid-cols-2 gap-12">
+
+                <!-- Left: Visualizer -->
+                <div class="space-y-6">
+                    <div
+                        class="aspect-[9/16] bg-zinc-900/50 rounded-2xl border border-white/5 relative overflow-hidden group">
+                        <!-- Simulated Skeleton UI -->
+                        <div class="absolute inset-x-8 top-12 h-4 bg-white/5 rounded-full w-24"></div>
+                        <div
+                            class="absolute inset-x-8 bottom-24 bg-white/5 rounded-xl h-32 backdrop-blur-md border border-white/5 p-4">
+                            <div class="h-2 bg-white/20 rounded-full w-3/4 mb-2 animate-pulse"></div>
+                            <div class="h-2 bg-white/20 rounded-full w-1/2"></div>
+                        </div>
+
+                        <!-- Overlay Icon -->
+                        <div
+                            class="absolute inset-0 flex items-center justify-center opacity-30 group-hover:opacity-100 transition-opacity">
+                            <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Analysis Flow -->
+                <div class="relative pt-4">
+                    <h3 class="text-sm font-bold text-white mb-8 border-b border-white/5 pb-4">ANALYSIS ENGINE</h3>
+
+                    <div class="space-y-8 relative">
+                        <!-- Vertical Line -->
+                        <div
+                            class="absolute left-3 top-14 bottom-0 w-px bg-gradient-to-b from-cyan-500/50 to-transparent">
+                        </div>
+
+                        <div class="flex gap-6 items-start">
+                            <div
+                                class="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-500 text-cyan-500 flex items-center justify-center text-[10px] font-bold z-10 shrink-0">
+                                1</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-1">Hook Identification</h4>
+                                <p class="text-sm text-white/50">Found high-contrast motion in first 1.5s.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-6 items-start opacity-50">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold z-10 shrink-0">
+                                2</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-1">Product Integration</h4>
+                                <p class="text-sm text-white/50">Analyzing visual timestamps...</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-6 items-start opacity-30">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold z-10 shrink-0">
+                                3</div>
+                            <div class="w-full">
+                                <h4 class="text-sm font-bold text-white mb-1">Script Generation</h4>
+                                <div class="h-2 w-full bg-white/5 rounded-full mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 p-4 rounded-xl bg-cyan-900/10 border border-cyan-500/20">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono text-cyan-400">EST. ROI SCORE</span>
+                            <span class="text-xl font-bold font-display text-white">9.4<span
+                                    class="text-white/30 text-base">/10</span></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster V8 - Aurora Pro | 极光银河版</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Outfit for Headings (Geometric, Premium), Plus Jakarta Sans for Body (Modern, Readable) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #000000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        @keyframes blob-bounce {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        /* V8 Aurora: Silver/Blue Theme */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: blob-bounce 12s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Silver Blob */
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: #e2e8f0;
+            animation-delay: 0s;
+            opacity: 0.2;
+        }
+
+        /* Cyan Blob */
+        .blob-2 {
+            top: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: #06b6d4;
+            animation-delay: -2s;
+            opacity: 0.3;
+        }
+
+        /* Sky Blue Blob */
+        .blob-3 {
+            bottom: -20%;
+            left: 20%;
+            width: 70vw;
+            height: 70vw;
+            background: #0ea5e9;
+            animation-delay: -4s;
+            opacity: 0.3;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .glass-clean {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .glass-clean:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            bottom: -20px;
+            width: 1px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.0));
+        }
+
+        h1.hero-title {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(to bottom right, #fff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.04em;
+        }
+
+        .step-circle {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen relative selection:bg-cyan-500/30">
+
+    <div class="aurora-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div class="noise-overlay"></div>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/5 backdrop-blur-xl">
+        <div class="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="font-display font-bold text-xl tracking-tighter">video_gen</span>
+                <span
+                    class="px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-wider text-white/50">Pro
+                    V8</span>
+            </div>
+
+            <div class="flex items-center gap-6 text-sm font-medium text-white/60">
+                <a href="#" class="hover:text-white transition-colors">Workspace</a>
+                <button class="text-white hover:text-cyan-400">Log out</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-32 pb-20 max-w-[1280px] mx-auto px-6">
+
+        <!-- Hero: Silver/Blue Theme -->
+        <section class="max-w-4xl mx-auto text-center mb-20">
+            <!-- Outfit Font: Bold, crisp, readable -->
+            <h1 class="hero-title text-6xl md:text-7xl font-extrabold mb-6 leading-[0.95]">
+                Production Ready.
+            </h1>
+
+            <div class="max-w-xl mx-auto mt-10">
+                <div
+                    class="glass-clean rounded-2xl p-2 flex items-center pl-4 pr-2 hover:scale-[1.01] transition-transform duration-300">
+                    <input type="text"
+                        class="flex-1 bg-transparent text-white placeholder-white/30 outline-none h-12 font-medium text-lg"
+                        placeholder="Paste TikTok video URL..." value="https://tiktok.com/@user/video/7382910392">
+                    <button
+                        class="bg-white text-black px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-100 transition-colors">
+                        Analyze
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace -->
+        <div class="grid lg:grid-cols-12 gap-8 items-start">
+
+            <!-- Left: Floating Preview -->
+            <div class="lg:col-span-4 space-y-6 sticky top-24">
+                <div class="glass-clean rounded-2xl overflow-hidden relative group p-2">
+                    <div class="aspect-[9/16] bg-zinc-900 rounded-[14px] overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800&auto=format&fit=crop"
+                            class="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-500">
+                        <div class="absolute inset-x-4 bottom-4 glass-clean rounded-xl p-3 backdrop-blur-md">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <span class="text-cyan-400">● LIVE</span>
+                                <span class="text-white/60">00:32</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- V8 Stats (Clean) -->
+                <div class="glass-clean rounded-2xl p-6">
+                    <h3 class="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-6 font-display">
+                        Performance</h3>
+                    <div class="space-y-5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-white/70 font-medium">Total Views</span>
+                            <span class="text-lg font-display font-bold">1.2M</span>
+                        </div>
+                        <div class="w-full bg-white/5 h-0.5 rounded-full">
+                            <div class="bg-white w-3/4 h-full rounded-full"></div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-white/70 font-medium">Engagement Rate</span>
+                            <span class="text-lg font-display font-bold text-cyan-400">8.4%</span>
+                        </div>
+                        <div class="w-full bg-white/5 h-0.5 rounded-full">
+                            <div class="bg-cyan-400 w-1/2 h-full rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Script Editor -->
+            <div class="lg:col-span-8">
+                <div class="glass-clean p-8 rounded-[30px] min-h-[800px]">
+
+                    <div class="flex items-center justify-between mb-10">
+                        <h2 class="text-2xl font-display font-bold tracking-tight">Script Timeline</h2>
+                        <button
+                            class="bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-transform shadow-lg shadow-white/5">
+                            Generate Video ($1.50)
+                        </button>
+                    </div>
+
+                    <div class="relative pl-4 space-y-2">
+
+                        <!-- 1. Hook -->
+                        <div class="relative pl-14 pb-12 group">
+                            <div class="timeline-line"></div>
+                            <div
+                                class="absolute left-0 top-0 w-10 h-10 step-circle rounded-full flex items-center justify-center text-sm font-bold text-white z-10 transition-transform group-hover:scale-110">
+                                1</div>
+
+                            <div
+                                class="glass-clean p-6 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-l-white">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="text-[10px] font-bold text-white bg-white/10 px-2 py-1 rounded tracking-wide font-display">HOOK</span>
+                                        <span class="text-[10px] font-mono text-white/40">00:00 - 00:03</span>
+                                    </div>
+                                    <button class="text-white/40 hover:text-white font-medium text-xs">Edit</button>
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-8">
+                                    <div class="space-y-2">
+                                        <label
+                                            class="text-[10px] font-bold text-white/30 uppercase tracking-widest font-display">Script</label>
+                                        <p class="text-base text-white/90 font-medium leading-relaxed">"Do you know why
+                                            this product is selling out everywhere right now?"</p>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label
+                                            class="text-[10px] font-bold text-white/30 uppercase tracking-widest font-display">Visual</label>
+                                        <p class="text-sm text-white/60 font-medium">Extreme close-up overlay. Fast
+                                            cuts.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Pain Point -->
+                        <div class="relative pl-14 pb-12 group">
+                            <div class="timeline-line"></div>
+                            <div
+                                class="absolute left-0 top-0 w-10 h-10 step-circle rounded-full flex items-center justify-center text-sm font-bold text-white z-10 transition-transform group-hover:scale-110">
+                                2</div>
+
+                            <div
+                                class="glass-clean p-6 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-l-zinc-500">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="text-[10px] font-bold text-zinc-400 bg-white/5 px-2 py-1 rounded tracking-wide font-display">PAIN
+                                            POINT</span>
+                                        <span class="text-[10px] font-mono text-white/40">00:03 - 00:10</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-white/80 mb-2 font-medium">"Summer heat driving you crazy?
+                                    Regular fans are just too bulky to carry."</p>
+                            </div>
+                        </div>
+
+                        <!-- 3. Solution -->
+                        <div class="relative pl-14 pb-12 group">
+                            <div class="timeline-line"></div>
+                            <div
+                                class="absolute left-0 top-0 w-10 h-10 step-circle rounded-full flex items-center justify-center text-sm font-bold text-white z-10 transition-transform group-hover:scale-110">
+                                3</div>
+
+                            <div
+                                class="glass-clean p-6 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-l-cyan-400">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="text-[10px] font-bold text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded tracking-wide font-display">SOLUTION</span>
+                                        <span class="text-[10px] font-mono text-white/40">00:10 - 00:20</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-white/80 font-medium">"This portable mini-fan fits in your pocket
+                                    but has tornado power!"</p>
+                            </div>
+                        </div>
+
+                        <!-- 4. CTA -->
+                        <div class="relative pl-14 pb-4 group">
+                            <div class="timeline-line"></div>
+                            <div
+                                class="absolute left-0 top-0 w-10 h-10 step-circle rounded-full flex items-center justify-center text-sm font-bold text-white z-10 transition-transform group-hover:scale-110">
+                                4</div>
+
+                            <div
+                                class="glass-clean p-6 rounded-2xl hover:bg-white/5 transition-colors border-l-2 border-l-blue-500">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-1 rounded tracking-wide font-display">CTA</span>
+                                        <span class="text-[10px] font-mono text-white/40">00:25 - 00:30</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-white/80 font-medium">"Click the link below to get yours for 50%
+                                    off today only!"</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</body>
+
+</html>

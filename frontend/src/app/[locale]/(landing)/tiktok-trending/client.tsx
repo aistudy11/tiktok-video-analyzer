@@ -7,7 +7,6 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Badge } from '@/shared/components/ui/badge';
-import { useToast } from '@/shared/hooks/use-media';
 
 interface TikTokVideo {
   id: string;

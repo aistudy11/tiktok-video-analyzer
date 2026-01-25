@@ -15,8 +15,13 @@ FROM deps AS builder
 
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
+# Copy all source files
 COPY . .
+
+# Regenerate .source directory (fumadocs-mdx needs content files which weren't available during postinstall)
+RUN pnpm exec fumadocs-mdx
+
+# Build the application
 RUN pnpm build
 
 # Production image, copy all the files and run next

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BarChart3, Play, Loader2, TrendingUp, Eye, Heart, MessageCircle, Share2 } from 'lucide-react';
+import { BarChart3, Play, Loader2, TrendingUp, Eye, Heart, MessageCircle, Share2, ExternalLink, ChevronDown, ChevronUp, Sparkles, ThumbsUp, Zap } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -241,31 +241,64 @@ export function TiktokAnalyzer({
                 </>
               )}
 
-              {/* Feishu Link */}
+              {/* Primary CTA - Feishu Link */}
               {result.feishu_record_id && (
-                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                  <span className="text-sm text-green-700 dark:text-green-400">
-                    ✓ 已同步到飞书多维表格 (记录 ID: {result.feishu_record_id})
-                  </span>
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">分析已完成</p>
+                        <p className="text-sm text-muted-foreground">完整报告已同步到飞书多维表格</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-blue-500 hover:bg-blue-600"
+                      onClick={() => {
+                        // TODO: 构建飞书链接
+                        window.open(`https://feishu.cn/base/${process.env.NEXT_PUBLIC_FEISHU_BITABLE_APP_TOKEN}`, '_blank');
+                      }}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      查看完整报告
+                    </Button>
+                  </div>
                 </div>
               )}
 
+              {/* Quick Insights Cards */}
+              {result.result && (result.result.sentiment || result.result.engagement_prediction) && (
+                <div className="grid grid-cols-2 gap-4">
+                  {result.result.sentiment && (
+                    <InsightCard
+                      icon={ThumbsUp}
+                      label="情感倾向"
+                      value={result.result.sentiment}
+                      color="purple"
+                    />
+                  )}
+                  {result.result.engagement_prediction && (
+                    <InsightCard
+                      icon={Zap}
+                      label="互动预测"
+                      value={result.result.engagement_prediction}
+                      color="orange"
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Collapsible AI Analysis */}
               {result.result?.ai_analysis && (
-                <div className="p-4 bg-muted rounded-lg">
-                  <h4 className="font-semibold mb-2">AI 分析</h4>
-                  <p className="text-muted-foreground text-sm whitespace-pre-wrap">
-                    {result.result.ai_analysis}
-                  </p>
-                </div>
-              )}
-
-              {result.result?.content_summary && (
-                <div className="p-4 bg-muted rounded-lg">
-                  <h4 className="font-semibold mb-2">内容摘要</h4>
-                  <p className="text-muted-foreground text-sm whitespace-pre-wrap">
-                    {result.result.content_summary}
-                  </p>
-                </div>
+                <AnalysisAccordion
+                  title="AI 分析详情"
+                  content={result.result.ai_analysis}
+                  summary={result.result.content_summary}
+                />
               )}
             </div>
           )}
@@ -309,6 +342,90 @@ function StatCard({
         {value !== undefined ? formatNumber(value) : '-'}
       </div>
       <div className="text-xs text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+
+function InsightCard({
+  icon: Icon,
+  label,
+  value,
+  color
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  color: 'purple' | 'orange' | 'green' | 'blue';
+}) {
+  const colorStyles = {
+    purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400',
+    orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400',
+    green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400',
+    blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400',
+  };
+
+  const iconColors = {
+    purple: 'text-purple-500',
+    orange: 'text-orange-500',
+    green: 'text-green-500',
+    blue: 'text-blue-500',
+  };
+
+  return (
+    <div className={cn('p-4 rounded-xl border', colorStyles[color])}>
+      <div className="flex items-center gap-2 mb-1">
+        <Icon className={cn('w-4 h-4', iconColors[color])} />
+        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      </div>
+      <p className="font-semibold text-sm">{value}</p>
+    </div>
+  );
+}
+
+function AnalysisAccordion({
+  title,
+  content,
+  summary
+}: {
+  title: string;
+  content: string;
+  summary?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Extract first sentence or first 100 chars as preview
+  const preview = summary || content.split(/[。！？\n]/)[0].slice(0, 100) + '...';
+
+  return (
+    <div className="border border-border rounded-xl overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 flex items-center justify-between bg-muted/30 hover:bg-muted/50 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span className="font-semibold text-foreground">{title}</span>
+        </div>
+        {isOpen ? (
+          <ChevronUp className="w-5 h-5 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-muted-foreground" />
+        )}
+      </button>
+
+      {!isOpen && (
+        <div className="px-4 py-3 border-t border-border">
+          <p className="text-sm text-muted-foreground line-clamp-2">{preview}</p>
+        </div>
+      )}
+
+      {isOpen && (
+        <div className="p-4 border-t border-border bg-card">
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            {content}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

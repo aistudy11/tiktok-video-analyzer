@@ -7,8 +7,9 @@ RUN apk add --no-cache libc6-compat && yarn global add pnpm
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
+# Note: --ignore-scripts to skip postinstall (fumadocs-mdx needs source files which aren't copied yet)
 COPY package.json pnpm-lock.yaml* source.config.ts next.config.mjs ./
-RUN pnpm i --frozen-lockfile
+RUN pnpm i --frozen-lockfile --ignore-scripts
 
 # Rebuild the source code only when needed
 FROM deps AS builder

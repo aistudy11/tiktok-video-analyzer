@@ -132,7 +132,7 @@ services:
       - NEXT_PUBLIC_THEME=${NEXT_PUBLIC_THEME:-default}
       - NEXT_PUBLIC_APPEARANCE=${NEXT_PUBLIC_APPEARANCE:-system}
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - gateway
     restart: always

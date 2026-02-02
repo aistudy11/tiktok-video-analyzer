@@ -112,6 +112,7 @@ async def create_analysis_task(
     1. Download the TikTok video (watermark-free)
     2. Analyze with Gemini 2.5 Pro
     3. Sync results to Feishu Bitable (optional)
+    4. Sync results to Notion (optional)
     """
     logger.info(f"Creating analysis task for URL: {request.url}")
 
@@ -127,7 +128,8 @@ async def create_analysis_task(
         url=request.url,
         callback_url=request.callback_url,
         analysis_prompt=request.analysis_prompt,
-        sync_to_feishu=request.sync_to_feishu
+        sync_to_feishu=request.sync_to_feishu,
+        sync_to_notion=request.sync_to_notion
     )
 
     # Queue Celery task

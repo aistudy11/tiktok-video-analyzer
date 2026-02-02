@@ -21,6 +21,7 @@ class VideoAnalysisRequest(BaseModel):
         description="Custom analysis prompt for Gemini"
     )
     sync_to_feishu: bool = Field(True, description="Whether to sync results to Feishu Bitable")
+    sync_to_notion: bool = Field(True, description="Whether to sync results to Notion")
 
     class Config:
         json_schema_extra = {
@@ -28,7 +29,8 @@ class VideoAnalysisRequest(BaseModel):
                 "url": "https://www.tiktok.com/@user/video/1234567890",
                 "callback_url": "https://your-webhook.com/callback",
                 "analysis_prompt": "分析这个视频的内容、风格和营销价值",
-                "sync_to_feishu": True
+                "sync_to_feishu": True,
+                "sync_to_notion": True
             }
         }
 
@@ -76,6 +78,7 @@ class TaskStatusResponse(BaseModel):
     error: Optional[str] = None
     video_path: Optional[str] = None
     feishu_record_id: Optional[str] = None
+    notion_page_id: Optional[str] = None
 
     class Config:
         json_schema_extra = {
@@ -90,6 +93,7 @@ class TaskStatusResponse(BaseModel):
                     "video_title": "Amazing TikTok Video",
                     "ai_analysis": "This video shows..."
                 },
-                "feishu_record_id": "rec_xyz789"
+                "feishu_record_id": "rec_xyz789",
+                "notion_page_id": "page_xyz789"
             }
         }

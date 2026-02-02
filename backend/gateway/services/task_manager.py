@@ -37,7 +37,8 @@ class TaskManager:
         url: str,
         callback_url: Optional[str] = None,
         analysis_prompt: Optional[str] = None,
-        sync_to_feishu: bool = True
+        sync_to_feishu: bool = True,
+        sync_to_notion: bool = True
     ) -> str:
         task_id = self._generate_task_id()
         now = datetime.now().isoformat()
@@ -48,6 +49,7 @@ class TaskManager:
             "callback_url": callback_url,
             "analysis_prompt": analysis_prompt,
             "sync_to_feishu": sync_to_feishu,
+            "sync_to_notion": sync_to_notion,
             "status": TaskStatus.PENDING.value,
             "progress": 0,
             "message": "Task created, waiting to start",
@@ -57,6 +59,7 @@ class TaskManager:
             "error": None,
             "video_path": None,
             "feishu_record_id": None,
+            "notion_page_id": None,
         }
 
         r = await self.get_redis()
@@ -92,6 +95,7 @@ class TaskManager:
             error=task_data.get("error"),
             video_path=task_data.get("video_path"),
             feishu_record_id=task_data.get("feishu_record_id"),
+            notion_page_id=task_data.get("notion_page_id"),
         )
 
     async def update_task(
@@ -104,6 +108,7 @@ class TaskManager:
         error: Optional[str] = None,
         video_path: Optional[str] = None,
         feishu_record_id: Optional[str] = None,
+        notion_page_id: Optional[str] = None,
     ) -> bool:
         r = await self.get_redis()
         key = self._get_task_key(task_id)
@@ -129,6 +134,8 @@ class TaskManager:
             task_data["video_path"] = video_path
         if feishu_record_id is not None:
             task_data["feishu_record_id"] = feishu_record_id
+        if notion_page_id is not None:
+            task_data["notion_page_id"] = notion_page_id
 
         await r.setex(key, self.task_ttl, json.dumps(task_data))
         return True
@@ -169,6 +176,7 @@ class SyncTaskManager:
         error: Optional[str] = None,
         video_path: Optional[str] = None,
         feishu_record_id: Optional[str] = None,
+        notion_page_id: Optional[str] = None,
     ) -> bool:
         key = self._get_task_key(task_id)
         data = self.redis.get(key)
@@ -193,6 +201,8 @@ class SyncTaskManager:
             task_data["video_path"] = video_path
         if feishu_record_id is not None:
             task_data["feishu_record_id"] = feishu_record_id
+        if notion_page_id is not None:
+            task_data["notion_page_id"] = notion_page_id
 
         self.redis.setex(key, self.task_ttl, json.dumps(task_data))
         return True

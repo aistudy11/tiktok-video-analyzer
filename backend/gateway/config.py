@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     feishu_bitable_app_token: str = ""
     feishu_bitable_table_id: str = ""
 
+    # Notion
+    notion_api_key: str = ""
+    notion_database_id: str = ""
+
     # Storage paths
     storage_path: str = "/app/storage"
     video_storage_path: str = "/app/storage/videos"

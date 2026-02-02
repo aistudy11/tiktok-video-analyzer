@@ -20,6 +20,7 @@ from services.task_manager import SyncTaskManager
 from video_download.download import TikTokDownloader
 from ai_analysis.analyze import GeminiVideoAnalyzer
 from data_sync.bitable_sync import FeishuBitableSync
+from data_sync.notion_sync import NotionSync
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ def analyze_video_task(self, task_id: str):
     url = task_data["url"]
     analysis_prompt = task_data.get("analysis_prompt")
     sync_to_feishu = task_data.get("sync_to_feishu", True)
+    sync_to_notion = task_data.get("sync_to_notion", True)
     callback_url = task_data.get("callback_url")
 
     video_path = None
@@ -147,6 +149,34 @@ def analyze_video_task(self, task_id: str):
             if sync_result.get("success"):
                 feishu_record_id = sync_result.get("record_id")
 
+        # Stage 4: Sync to Notion (optional)
+        notion_page_id = None
+        if sync_to_notion and settings.notion_api_key and settings.notion_database_id:
+            tm.update_task(
+                task_id,
+                status=TaskStatus.SYNCING,
+                progress=90,
+                message="Syncing results to Notion..."
+            )
+
+            notion_syncer = NotionSync(
+                api_key=settings.notion_api_key,
+                database_id=settings.notion_database_id
+            )
+
+            notion_result = notion_syncer.sync_analysis(
+                task_id=task_id,
+                url=url,
+                analysis_result=analysis_result,
+                video_path=video_path
+            )
+
+            if notion_result.get("success"):
+                notion_page_id = notion_result.get("page_id")
+                logger.info(f"Synced to Notion: {notion_page_id}")
+            else:
+                logger.warning(f"Notion sync failed: {notion_result.get('error')}")
+
         # Complete
         tm.update_task(
             task_id,
@@ -154,7 +184,8 @@ def analyze_video_task(self, task_id: str):
             progress=100,
             message="Analysis completed successfully",
             result=analysis_result,
-            feishu_record_id=feishu_record_id
+            feishu_record_id=feishu_record_id,
+            notion_page_id=notion_page_id
         )
 
         # Callback notification
@@ -165,7 +196,8 @@ def analyze_video_task(self, task_id: str):
                         "task_id": task_id,
                         "status": "completed",
                         "result": analysis_result,
-                        "feishu_record_id": feishu_record_id
+                        "feishu_record_id": feishu_record_id,
+                        "notion_page_id": notion_page_id
                     })
             except Exception as e:
                 logger.warning(f"Callback notification failed: {e}")
@@ -174,7 +206,8 @@ def analyze_video_task(self, task_id: str):
             "success": True,
             "task_id": task_id,
             "result": analysis_result,
-            "feishu_record_id": feishu_record_id
+            "feishu_record_id": feishu_record_id,
+            "notion_page_id": notion_page_id
         }
 
     except Exception as e:

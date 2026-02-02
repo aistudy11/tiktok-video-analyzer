@@ -22,9 +22,37 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     qualities: [60, 70, 75],
     remotePatterns: [
+      // TikTok CDN domains for video thumbnails
       {
         protocol: 'https',
-        hostname: '*',
+        hostname: '*.tiktokcdn.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.tiktokcdn-us.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'p16-sign-*.tiktokcdn.com',
+      },
+      // tikwm video download service
+      {
+        protocol: 'https',
+        hostname: '*.tikwm.com',
+      },
+      // User avatars and external images
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+      // Supabase storage (if used)
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
       },
     ],
   },

@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, StreamingResponse
 from contextlib import asynccontextmanager
 from typing import Optional, List
+from pathlib import Path
 from pydantic import BaseModel
 import logging
+import os
 
 from config import settings
 from models import (
@@ -188,6 +191,55 @@ async def cancel_task(
     )
 
     return {"message": f"Task {task_id} cancelled"}
+
+
+@app.get("/api/v1/video/{video_filename}")
+async def get_video(video_filename: str):
+    """
+    Stream a video file.
+
+    This endpoint allows the frontend to access downloaded videos.
+    """
+    # Sanitize filename to prevent directory traversal
+    if ".." in video_filename or "/" in video_filename:
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
+    video_path = Path(settings.video_storage_path) / video_filename
+
+    if not video_path.exists():
+        raise HTTPException(status_code=404, detail="Video not found")
+
+    # Return video file with proper content type
+    return FileResponse(
+        path=str(video_path),
+        media_type="video/mp4",
+        filename=video_filename
+    )
+
+
+@app.get("/api/v1/thumbnail/{task_id}")
+async def get_thumbnail(
+    task_id: str,
+    tm: TaskManager = Depends(get_task_manager)
+):
+    """
+    Get thumbnail URL for a task.
+
+    Returns the thumbnail URL from the task's metadata.
+    """
+    task = await tm.get_task(task_id)
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    result = task.result or {}
+    raw_metadata = result.get("raw_metadata", {})
+    thumbnail_url = raw_metadata.get("thumbnail_url", "")
+
+    if not thumbnail_url:
+        raise HTTPException(status_code=404, detail="Thumbnail not available")
+
+    return {"thumbnail_url": thumbnail_url}
 
 
 @app.get("/api/v1/trending/videos", response_model=TrendingVideosResponse)

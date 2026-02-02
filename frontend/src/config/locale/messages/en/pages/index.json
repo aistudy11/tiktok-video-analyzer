@@ -31,11 +31,7 @@
             "variant": "outline"
           }
         ],
-        "show_avatars": false,
-        "background_image": {
-          "src": "/imgs/bg/tree.jpg",
-          "alt": "hero"
-        }
+        "show_avatars": false
       },
       "tiktok-analyzer": {
         "block": "tiktok-analyzer",

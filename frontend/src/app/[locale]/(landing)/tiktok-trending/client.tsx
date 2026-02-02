@@ -90,7 +90,6 @@ export function TikTokTrendingClient() {
         setVideos(data.videos || []);
       }
     } catch (error) {
-      console.error('Failed to load trending videos:', error);
     } finally {
       setLoadingVideos(false);
     }

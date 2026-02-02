@@ -138,3 +138,45 @@ rg "useQuery|useSWR|fetch\(" src/ -g "*.{ts,tsx}" -C 5
 # Check for console.log left in components (should be empty in prod)
 rg "console\." src/components/ -g "*.{ts,tsx,vue,svelte}"
 ```
+
+---
+
+## Blocks 目录架构规范
+
+### 目录结构原则
+
+```
+themes/default/blocks/
+├── header.tsx        ← 通用组件，直接放根目录
+├── hero.tsx          ← 通用组件，直接放根目录
+├── glass-panel.tsx   ← 通用UI组件，直接放根目录
+├── background-layer.tsx ← 通用UI组件，直接放根目录
+├── tiktok/           ← 业务特定，按平台分子目录
+│   ├── script-timeline.tsx
+│   └── video-preview.tsx
+├── twitter/          ← 未来扩展
+└── youtube/          ← 未来扩展
+```
+
+### 规则
+
+1. **通用组件** → 放 `blocks/` 根目录
+2. **业务特定组件** → 放 `blocks/{platform}/` 子目录
+3. **禁止重复** → 复用 header.tsx、hero.tsx 等现有组件
+4. **命名清晰** → 子目录用平台名（tiktok/twitter），不用功能名（video-gen）
+
+### 创建新组件前必须检查
+
+```bash
+# 检查现有 blocks 结构
+ls -la frontend/src/themes/default/blocks/
+
+# 检查是否已有类似功能组件
+rg "export.*function|export.*const" frontend/src/themes/default/blocks/*.tsx
+```
+
+### 禁止
+
+- ❌ 创建与 header.tsx、hero.tsx 等功能重复的组件
+- ❌ 用功能名命名子目录（如 video-gen），应用平台名（如 tiktok）
+- ❌ 把通用UI组件放在业务子目录里

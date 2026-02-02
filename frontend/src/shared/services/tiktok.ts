@@ -1,99 +1,79 @@
-// TikTok API Service - communicates with backend
+/**
+ * TikTok API Service
+ *
+ * Centralized service for all TikTok-related API calls.
+ * This service should be used by hooks instead of direct fetch calls.
+ */
 
-const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
+import type {
+  TikTokVideo,
+  TrendingVideosResponse,
+  AnalysisResult,
+  AIAnalysis,
+  GeneratedScript,
+  ScriptGenerationResponse,
+  VideoGenerationResponse,
+  VideoStatusResponse,
+} from '@/types/tiktok';
 
-export interface TikTokVideo {
-  id: string;
-  url: string;
-  title: string;
-  description?: string;
-  author: {
-    id: string;
-    uniqueId: string;
-    nickname: string;
-    avatarUrl?: string;
-  };
-  stats: {
-    playCount: number;
-    likeCount: number;
-    commentCount: number;
-    shareCount: number;
-  };
-  coverUrl?: string;
-  videoUrl?: string;
-  duration?: number;
-  createTime?: number;
-  hashtags?: string[];
-}
+// Re-export types for backward compatibility
+export type {
+  TikTokVideo,
+  TrendingVideosResponse,
+};
 
-export interface TrendingVideosResponse {
-  videos: TikTokVideo[];
-  cursor?: string;
-  hasMore: boolean;
-  totalCount?: number;
-}
-
-export interface VideoAnalysisRequest {
-  url: string;
-  callbackUrl?: string;
-  analysisPrompt?: string;
-  syncToFeishu?: boolean;
-}
-
-export interface VideoAnalysisResponse {
-  task_id: string;
-  status: string;
-  message: string;
-}
-
-export interface TaskStatusResponse {
-  task_id: string;
-  status: string;
-  message?: string;
-  progress?: number;
-  result?: Record<string, unknown>;
-  error?: string;
-}
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8000';
 
 export class TikTokService {
   private baseUrl: string;
+  private frontendApiBase: string;
 
   constructor(baseUrl: string = BACKEND_URL) {
     this.baseUrl = baseUrl;
+    // Frontend API routes (Next.js API routes)
+    this.frontendApiBase = '';
   }
 
+  // ============================================
+  // Video Analysis APIs
+  // ============================================
+
   /**
-   * Create a new video analysis task
+   * Submit a video for analysis via frontend API
+   * @param url TikTok video URL
    */
-  async analyzeVideo(request: VideoAnalysisRequest): Promise<VideoAnalysisResponse> {
-    const response = await fetch(`${this.baseUrl}/api/v1/analyze`, {
+  async submitAnalysis(url: string): Promise<{ task_id: string }> {
+    const response = await fetch(`${this.frontendApiBase}/api/tiktok/analyze`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify({ url }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to create analysis task');
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error?.message || 'Failed to submit analysis');
     }
 
-    return response.json();
+    return result.data;
   }
 
   /**
-   * Get the status of an analysis task
+   * Get analysis task status via frontend API
+   * @param taskId Task ID
    */
-  async getTaskStatus(taskId: string): Promise<TaskStatusResponse> {
-    const response = await fetch(`${this.baseUrl}/api/v1/status/${taskId}`);
+  async getAnalysisStatus(taskId: string): Promise<AnalysisResult> {
+    const response = await fetch(`${this.frontendApiBase}/api/tiktok/status?task_id=${taskId}`);
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to get task status');
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error?.message || 'Failed to get analysis status');
     }
 
-    return response.json();
+    return result.data;
   }
 
   /**
@@ -112,8 +92,110 @@ export class TikTokService {
     return response.json();
   }
 
+  // ============================================
+  // Script Generation APIs
+  // ============================================
+
   /**
-   * Get trending videos (placeholder - to be implemented in backend)
+   * Generate a video script from analysis data
+   * @param analysisData AI analysis result
+   * @param useAI Whether to use AI for generation (defaults to true)
+   */
+  async generateScript(analysisData: AIAnalysis, useAI: boolean = true): Promise<GeneratedScript> {
+    const response = await fetch(`${this.frontendApiBase}/api/tiktok/generate-script`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        analysis_data: {
+          summary: analysisData.summary,
+          hooks: analysisData.hooks,
+          pain_points: analysisData.pain_points,
+          solutions: analysisData.solutions,
+          cta: analysisData.cta,
+          target_audience: analysisData.target_audience,
+          viral_elements: analysisData.viral_elements,
+          improvement_suggestions: analysisData.improvement_suggestions,
+          scenes: analysisData.scenes,
+        },
+        use_ai: useAI,
+      }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to generate script');
+    }
+
+    const data: ScriptGenerationResponse = await response.json();
+
+    if (!data.success || !data.script) {
+      throw new Error(data.error || 'Invalid response from script generation API');
+    }
+
+    return data.script;
+  }
+
+  // ============================================
+  // Video Generation APIs
+  // ============================================
+
+  /**
+   * Start video generation from a script
+   * @param script Generated script
+   * @param userId Optional user ID
+   */
+  async generateVideo(script: GeneratedScript, userId?: string): Promise<{ task_id: string }> {
+    const response = await fetch(`${this.frontendApiBase}/api/tiktok/generate-video`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        script,
+        user_id: userId,
+      }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to start video generation');
+    }
+
+    const data: VideoGenerationResponse = await response.json();
+
+    if (!data.task_id) {
+      throw new Error('No task ID returned from video generation API');
+    }
+
+    return { task_id: data.task_id };
+  }
+
+  /**
+   * Get video generation status
+   * @param taskId Task ID
+   */
+  async getVideoStatus(taskId: string): Promise<VideoStatusResponse> {
+    const response = await fetch(`${this.frontendApiBase}/api/tiktok/video-status?task_id=${taskId}`);
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error?.message || 'Failed to get video status');
+    }
+
+    return result.data;
+  }
+
+  // ============================================
+  // Trending Videos APIs
+  // ============================================
+
+  /**
+   * Get trending videos
+   * @param cursor Pagination cursor
+   * @param limit Number of videos to fetch
    */
   async getTrendingVideos(
     cursor?: string,
@@ -138,6 +220,10 @@ export class TikTokService {
 
     return response.json();
   }
+
+  // ============================================
+  // Health Check
+  // ============================================
 
   /**
    * Check backend health

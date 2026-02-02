@@ -54,6 +54,8 @@ class TikTokDownloader:
             "likes": 0,
             "comments": 0,
             "shares": 0,
+            "thumbnail_url": "",
+            "video_url": "",
         }
 
         try:
@@ -92,6 +94,11 @@ class TikTokDownloader:
                 og_desc = page.query_selector('meta[property="og:description"]')
                 if og_desc:
                     metadata["description"] = og_desc.get_attribute("content") or ""
+
+            # Extract thumbnail from og:image
+            og_image = page.query_selector('meta[property="og:image"]')
+            if og_image:
+                metadata["thumbnail_url"] = og_image.get_attribute("content") or ""
 
             # Extract author from URL or page
             if not metadata["author"]:
@@ -252,6 +259,8 @@ class TikTokDownloader:
                                 "comments": video_data.get("comment_count", 0),
                                 "shares": video_data.get("share_count", 0),
                                 "hashtags": [tag.get("title", "") for tag in video_data.get("hashtags", []) if tag.get("title")],
+                                "thumbnail_url": video_data.get("cover", "") or video_data.get("origin_cover", ""),
+                                "video_url": video_url or "",
                             }
 
                         if video_url and self._download_video_file(video_url, output_path):
@@ -364,7 +373,8 @@ class TikTokDownloader:
 
 if __name__ == "__main__":
     # Test
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    logger = logging.getLogger(__name__)
     downloader = TikTokDownloader(storage_path="./test_downloads")
     result = downloader.download("https://www.tiktok.com/@tiktok/video/7326389754498695471")
-    print(json.dumps(result, indent=2))
+    logger.info(json.dumps(result, indent=2))

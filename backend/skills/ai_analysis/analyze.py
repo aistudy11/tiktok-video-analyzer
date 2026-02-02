@@ -380,13 +380,14 @@ class GeminiVideoAnalyzer:
 if __name__ == "__main__":
     # Test
     import sys
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    logger = logging.getLogger(__name__)
 
     api_key = os.environ.get("GEMINI_API_KEY")
     base_url = os.environ.get("GEMINI_BASE_URL", "https://api.apimart.ai")
 
     if not api_key:
-        print("Please set GEMINI_API_KEY environment variable")
+        logger.error("Please set GEMINI_API_KEY environment variable")
         sys.exit(1)
 
     analyzer = GeminiVideoAnalyzer(
@@ -397,8 +398,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         video_path = sys.argv[1]
         result = analyzer.analyze(video_path)
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        logger.info(json.dumps(result, indent=2, ensure_ascii=False))
     else:
         # Test text analysis
         result = analyzer.analyze_text("这是一个测试")
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        logger.info(json.dumps(result, indent=2, ensure_ascii=False))

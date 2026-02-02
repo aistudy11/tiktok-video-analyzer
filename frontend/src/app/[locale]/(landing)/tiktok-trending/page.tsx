@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { getThemePage } from '@/core/theme';
 import { TikTokTrendingClient } from './client';
 import { DynamicPage } from '@/shared/types/blocks/landing';
+import { JsonLd, createWebSiteSchema } from '@/shared/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'TikTok Trending Videos - Analyze & Discover',
@@ -21,6 +22,16 @@ export default async function TikTokTrendingPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  // Schema.org structured data for SEO
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tiktok-analyzer.example.com';
+  const websiteSchema = createWebSiteSchema(
+    'TikTok Video Analyzer',
+    `${siteUrl}/${locale}/tiktok-trending`,
+    {
+      description: 'AI-powered TikTok video analysis tool for discovering trends and insights',
+    }
+  );
 
   // Build page sections
   const page: DynamicPage = {
@@ -42,5 +53,10 @@ export default async function TikTokTrendingPage({
   // Load page component
   const Page = await getThemePage('dynamic-page');
 
-  return <Page locale={locale} page={page} />;
+  return (
+    <>
+      <JsonLd data={websiteSchema} />
+      <Page locale={locale} page={page} />
+    </>
+  );
 }

@@ -9,6 +9,33 @@ framework_deps: []
 This rule applies to ALL operations. No paths restriction.
 These principles are **framework-agnostic** and apply to any software project.
 
+## 基座架构原则（最高优先级）
+
+**所有开发必须以原代码架构为基座。**
+
+### 执行前必须验证
+
+1. **目录结构** - 新文件位置是否符合现有目录结构？
+2. **组件复用** - 现有组件能否满足需求？禁止创建重复功能组件
+3. **路由模式** - 是否遵循现有路由约定？
+4. **命名规范** - 是否与现有命名风格一致？
+
+### 验证方法
+
+```bash
+# 执行前必须对比现有结构
+ls -la [目标目录]
+```
+
+### 禁止
+
+- ❌ 不对比原代码直接创建新结构
+- ❌ 按计划文档执行而不验证架构一致性
+- ❌ 创建与现有组件功能重复的新组件
+- ❌ 盲目信任计划文档，必须验证其是否符合原代码架构
+
+---
+
 ## Core Beliefs
 
 - **Incremental progress over big bangs** - Small changes that compile and pass tests

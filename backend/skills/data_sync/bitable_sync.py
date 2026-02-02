@@ -326,7 +326,8 @@ class FeishuBitableSync:
 if __name__ == "__main__":
     # Test
     import sys
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    logger = logging.getLogger(__name__)
 
     app_id = os.environ.get("FEISHU_APP_ID")
     app_secret = os.environ.get("FEISHU_APP_SECRET")
@@ -334,7 +335,7 @@ if __name__ == "__main__":
     table_id = os.environ.get("FEISHU_BITABLE_TABLE_ID")
 
     if not all([app_id, app_secret, app_token, table_id]):
-        print("Please set all FEISHU_* environment variables")
+        logger.error("Please set all FEISHU_* environment variables")
         sys.exit(1)
 
     syncer = FeishuBitableSync(
@@ -373,4 +374,4 @@ if __name__ == "__main__":
             }
         }
     )
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    logger.info(json.dumps(result, indent=2, ensure_ascii=False))

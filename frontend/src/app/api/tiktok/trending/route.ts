@@ -1,12 +1,45 @@
+/**
+ * @fileoverview TikTok Trending Videos API
+ * @input GET { cursor?: string, limit?: string }
+ * @output { success: boolean, data?: { videos: [], hasMore: boolean }, error?: { code: string, message: string } }
+ * @description Fetches trending TikTok videos from backend with pagination support
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
 const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
+
+// Input validation schema
+const trendingQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.string().regex(/^\d+$/, 'Limit must be a number').optional().default('20'),
+});
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const cursor = searchParams.get('cursor');
-    const limit = searchParams.get('limit') || '20';
+
+    // Validate input
+    const parseResult = trendingQuerySchema.safeParse({
+      cursor: searchParams.get('cursor') ?? undefined,
+      limit: searchParams.get('limit') ?? undefined,
+    });
+
+    if (!parseResult.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parseResult.error.issues[0]?.message || 'Invalid query parameters',
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    const { cursor, limit } = parseResult.data;
 
     const params = new URLSearchParams();
     if (cursor) params.set('cursor', cursor);
@@ -28,30 +61,28 @@ export async function GET(request: NextRequest) {
       // If endpoint doesn't exist yet, return empty list
       if (response.status === 404) {
         return NextResponse.json({
-          videos: [],
-          hasMore: false,
-          message: 'Trending videos endpoint not yet implemented in backend',
+          success: true,
+          data: {
+            videos: [],
+            hasMore: false,
+            message: 'Trending videos endpoint not yet implemented in backend',
+          },
         });
       }
 
-      const error = await response.json();
+      const errorData = await response.json();
       return NextResponse.json(
-        { error: error.detail || 'Failed to fetch trending videos' },
+        { success: false, error: { code: 'BACKEND_ERROR', message: errorData.detail || 'Failed to fetch trending videos' } },
         { status: response.status }
       );
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('TikTok trending API error:', error);
+    return NextResponse.json({ success: true, data });
+  } catch (error: unknown) {
     return NextResponse.json(
-      {
-        videos: [],
-        hasMore: false,
-        error: 'Backend service unavailable',
-      },
-      { status: 200 } // Return 200 with empty list to avoid breaking the UI
+      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Backend service unavailable' } },
+      { status: 500 }
     );
   }
 }

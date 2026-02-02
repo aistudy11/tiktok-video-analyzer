@@ -1,15 +1,44 @@
+/**
+ * @fileoverview TikTok Analysis Task Status API
+ * @input GET { task_id: string }
+ * @output { success: boolean, data?: { status: string, ai_analysis?: AIAnalysis, video_info?: VideoInfo }, error?: { code: string, message: string } }
+ * @description Retrieves analysis task status and transforms backend response to frontend format
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import {
+  parseJsonString,
+  transformAIAnalysis,
+  transformVideoInfo,
+  fetchTikwmVideoInfo,
+  extractTikTokUrlFromPath,
+} from '@/lib/tiktok-transformers';
 
 const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
+const TIKWM_API_URL = process.env.TIKWM_API_URL || 'https://www.tikwm.com/api/';
+
+// Input validation schema
+const statusQuerySchema = z.object({
+  task_id: z.string().min(1, 'Task ID is required'),
+});
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const taskId = searchParams.get('task_id') || searchParams.get('taskId');
 
-    if (!taskId) {
+    // Validate input
+    const parseResult = statusQuerySchema.safeParse({ task_id: taskId });
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Task ID is required' },
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: parseResult.error.issues[0]?.message || 'Task ID is required',
+          },
+        },
         { status: 400 }
       );
     }
@@ -23,19 +52,63 @@ export async function GET(request: NextRequest) {
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const errorData = await response.json();
       return NextResponse.json(
-        { error: error.detail || 'Failed to get task status' },
+        { success: false, error: { code: 'BACKEND_ERROR', message: errorData.detail || 'Failed to get task status' } },
         { status: response.status }
       );
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('TikTok status API error:', error);
+
+    // Transform backend response to frontend-expected format
+    if (data.status === 'completed' && data.result) {
+      const result = data.result as Record<string, unknown>;
+
+      // Parse and transform ai_analysis
+      if (result.ai_analysis) {
+        let parsedAnalysis: Record<string, unknown> | null = null;
+
+        if (typeof result.ai_analysis === 'string') {
+          parsedAnalysis = parseJsonString(result.ai_analysis);
+        } else if (typeof result.ai_analysis === 'object') {
+          parsedAnalysis = result.ai_analysis as Record<string, unknown>;
+        }
+
+        if (parsedAnalysis) {
+          data.ai_analysis = transformAIAnalysis(parsedAnalysis);
+        }
+      }
+
+      // Transform video_info from raw_metadata
+      const videoPath = data.video_path as string | undefined;
+      const rawMetadata = result.raw_metadata as Record<string, unknown> | undefined;
+
+      // Check if we need to fetch video info from tikwm API
+      // This is needed when backend metadata doesn't have video_url or thumbnail_url
+      let tikwmInfo: { videoUrl: string; thumbnailUrl: string } | null = null;
+      const hasVideoUrl = rawMetadata?.video_url && typeof rawMetadata.video_url === 'string' && (rawMetadata.video_url as string).startsWith('http');
+      const hasThumbnailUrl = rawMetadata?.thumbnail_url || rawMetadata?.cover;
+
+      if (!hasVideoUrl || !hasThumbnailUrl) {
+        // Try to get the original TikTok URL - from task data or reconstruct from video_path
+        let tiktokUrl = data.url || result.url || result.video_url;
+        if (!tiktokUrl || typeof tiktokUrl !== 'string' || !tiktokUrl.includes('tiktok.com')) {
+          // Reconstruct TikTok URL from video_path
+          tiktokUrl = extractTikTokUrlFromPath(videoPath);
+        }
+        if (tiktokUrl && typeof tiktokUrl === 'string' && tiktokUrl.includes('tiktok.com')) {
+          tikwmInfo = await fetchTikwmVideoInfo(tiktokUrl, TIKWM_API_URL);
+        }
+      }
+
+      data.video_info = transformVideoInfo(result, BACKEND_URL, videoPath, tikwmInfo);
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } },
       { status: 500 }
     );
   }

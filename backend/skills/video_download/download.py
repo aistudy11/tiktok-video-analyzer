@@ -63,7 +63,88 @@ class TikTokDownloader:
             page.wait_for_load_state("networkidle", timeout=self.timeout)
             time.sleep(2)  # Additional wait for dynamic content
 
-            # Try to extract from JSON-LD
+            # Try to extract from TikTok's page data (new method)
+            try:
+                page_data = page.evaluate("""
+                    () => {
+                        // Try new format: __$UNIVERSAL_DATA$__
+                        const udata = window['__$UNIVERSAL_DATA$__'];
+                        if (udata && udata['__DEFAULT_SCOPE__']) {
+                            const scope = udata['__DEFAULT_SCOPE__'];
+                            const videoDetail = scope['webapp.video-detail'];
+                            if (videoDetail && videoDetail.itemInfo && videoDetail.itemInfo.itemStruct) {
+                                const item = videoDetail.itemInfo.itemStruct;
+                                const video = item.video || {};
+                                const stats = item.stats || {};
+                                const author = item.author || {};
+                                return {
+                                    id: item.id,
+                                    desc: item.desc || '',
+                                    createTime: item.createTime,
+                                    duration: video.duration || 0,
+                                    author: author.uniqueId || author.nickname || '',
+                                    authorNickname: author.nickname || '',
+                                    playCount: stats.playCount || 0,
+                                    diggCount: stats.diggCount || 0,
+                                    commentCount: stats.commentCount || 0,
+                                    shareCount: stats.shareCount || 0,
+                                    cover: video.cover || video.originCover || '',
+                                    playAddr: video.playAddr || video.downloadAddr || ''
+                                };
+                            }
+                        }
+
+                        // Try old format: __UNIVERSAL_DATA_FOR_REHYDRATION__
+                        const oldData = window.__UNIVERSAL_DATA_FOR_REHYDRATION__;
+                        if (oldData && oldData['__DEFAULT_SCOPE__']) {
+                            const scope = oldData['__DEFAULT_SCOPE__'];
+                            const videoDetail = scope['webapp.video-detail'];
+                            if (videoDetail && videoDetail.itemInfo && videoDetail.itemInfo.itemStruct) {
+                                const item = videoDetail.itemInfo.itemStruct;
+                                const video = item.video || {};
+                                const stats = item.stats || {};
+                                const author = item.author || {};
+                                return {
+                                    id: item.id,
+                                    desc: item.desc || '',
+                                    createTime: item.createTime,
+                                    duration: video.duration || 0,
+                                    author: author.uniqueId || author.nickname || '',
+                                    authorNickname: author.nickname || '',
+                                    playCount: stats.playCount || 0,
+                                    diggCount: stats.diggCount || 0,
+                                    commentCount: stats.commentCount || 0,
+                                    shareCount: stats.shareCount || 0,
+                                    cover: video.cover || video.originCover || '',
+                                    playAddr: video.playAddr || video.downloadAddr || ''
+                                };
+                            }
+                        }
+
+                        return null;
+                    }
+                """)
+
+                if page_data:
+                    metadata["title"] = page_data.get("desc", "")[:200]
+                    metadata["description"] = page_data.get("desc", "")
+                    metadata["author"] = page_data.get("author", "")
+                    metadata["duration"] = page_data.get("duration", 0)
+                    metadata["views"] = page_data.get("playCount", 0)
+                    metadata["likes"] = page_data.get("diggCount", 0)
+                    metadata["comments"] = page_data.get("commentCount", 0)
+                    metadata["shares"] = page_data.get("shareCount", 0)
+                    metadata["thumbnail_url"] = page_data.get("cover", "")
+                    metadata["video_url"] = page_data.get("playAddr", "")
+                    # Extract hashtags from description
+                    hashtags = re.findall(r"#(\w+)", metadata["description"])
+                    metadata["hashtags"] = list(set(hashtags))
+                    logger.info("Extracted metadata from page data")
+                    return metadata
+            except Exception as e:
+                logger.warning(f"JavaScript metadata extraction failed: {e}")
+
+            # Fallback: Try to extract from JSON-LD
             json_ld_scripts = page.query_selector_all('script[type="application/ld+json"]')
             for script in json_ld_scripts:
                 try:
@@ -96,9 +177,10 @@ class TikTokDownloader:
                     metadata["description"] = og_desc.get_attribute("content") or ""
 
             # Extract thumbnail from og:image
-            og_image = page.query_selector('meta[property="og:image"]')
-            if og_image:
-                metadata["thumbnail_url"] = og_image.get_attribute("content") or ""
+            if not metadata["thumbnail_url"]:
+                og_image = page.query_selector('meta[property="og:image"]')
+                if og_image:
+                    metadata["thumbnail_url"] = og_image.get_attribute("content") or ""
 
             # Extract author from URL or page
             if not metadata["author"]:
@@ -107,10 +189,11 @@ class TikTokDownloader:
                     metadata["author"] = author_match.group(1)
 
             # Extract hashtags from description
-            hashtags = re.findall(r"#(\w+)", metadata["description"])
-            metadata["hashtags"] = list(set(hashtags))
+            if not metadata["hashtags"]:
+                hashtags = re.findall(r"#(\w+)", metadata["description"])
+                metadata["hashtags"] = list(set(hashtags))
 
-            # Try to get engagement stats
+            # Try to get engagement stats from DOM
             try:
                 stats_elements = page.query_selector_all('[data-e2e="like-count"], [data-e2e="comment-count"], [data-e2e="share-count"], [data-e2e="video-views"], [data-e2e="browse-video-count"]')
                 for elem in stats_elements:
@@ -152,14 +235,78 @@ class TikTokDownloader:
         video_url = None
 
         try:
-            # Method 1: Get from video element source
+            # Method 1: Extract from __$UNIVERSAL_DATA$__ (TikTok's new data format)
+            try:
+                video_data = page.evaluate("""
+                    () => {
+                        // Try new format first: __$UNIVERSAL_DATA$__
+                        const udata = window['__$UNIVERSAL_DATA$__'];
+                        if (udata && udata['__DEFAULT_SCOPE__']) {
+                            const scope = udata['__DEFAULT_SCOPE__'];
+                            const videoDetail = scope['webapp.video-detail'];
+                            if (videoDetail && videoDetail.itemInfo && videoDetail.itemInfo.itemStruct) {
+                                const item = videoDetail.itemInfo.itemStruct;
+                                const video = item.video || {};
+                                return {
+                                    playAddr: video.playAddr || video.downloadAddr,
+                                    downloadAddr: video.downloadAddr,
+                                    bitrateUrl: video.bitrateInfo?.[0]?.PlayAddr?.UrlList?.[0]
+                                };
+                            }
+                        }
+
+                        // Try old format: __UNIVERSAL_DATA_FOR_REHYDRATION__
+                        const oldData = window.__UNIVERSAL_DATA_FOR_REHYDRATION__;
+                        if (oldData && oldData['__DEFAULT_SCOPE__']) {
+                            const scope = oldData['__DEFAULT_SCOPE__'];
+                            const videoDetail = scope['webapp.video-detail'];
+                            if (videoDetail && videoDetail.itemInfo && videoDetail.itemInfo.itemStruct) {
+                                const item = videoDetail.itemInfo.itemStruct;
+                                const video = item.video || {};
+                                return {
+                                    playAddr: video.playAddr || video.downloadAddr,
+                                    downloadAddr: video.downloadAddr,
+                                    bitrateUrl: video.bitrateInfo?.[0]?.PlayAddr?.UrlList?.[0]
+                                };
+                            }
+                        }
+
+                        // Try SIGI_STATE (legacy format)
+                        const sigiState = window.SIGI_STATE;
+                        if (sigiState && sigiState.ItemModule) {
+                            const itemKeys = Object.keys(sigiState.ItemModule);
+                            if (itemKeys.length > 0) {
+                                const item = sigiState.ItemModule[itemKeys[0]];
+                                if (item && item.video) {
+                                    return {
+                                        playAddr: item.video.playAddr || item.video.downloadAddr,
+                                        downloadAddr: item.video.downloadAddr
+                                    };
+                                }
+                            }
+                        }
+
+                        return null;
+                    }
+                """)
+
+                if video_data:
+                    # Prefer downloadAddr for no watermark, fallback to playAddr
+                    video_url = video_data.get("downloadAddr") or video_data.get("playAddr") or video_data.get("bitrateUrl")
+                    if video_url and video_url.startswith("http"):
+                        logger.info("Extracted video URL from page data")
+                        return video_url
+            except Exception as e:
+                logger.warning(f"JavaScript extraction failed: {e}")
+
+            # Method 2: Get from video element source
             video_elem = page.query_selector("video")
             if video_elem:
                 video_url = video_elem.get_attribute("src")
                 if video_url and "blob:" not in video_url:
                     return video_url
 
-            # Method 2: Look in page data
+            # Method 3: Look in page script content (fallback regex method)
             scripts = page.query_selector_all("script")
             for script in scripts:
                 content = script.inner_text()
@@ -178,9 +325,6 @@ class TikTokDownloader:
                         url = url.encode().decode("unicode_escape")
                         if url.startswith("http"):
                             return url
-
-            # Method 3: Intercept network requests
-            # This would require setting up request interception before navigation
 
         except Exception as e:
             logger.warning(f"Error extracting video URL: {e}")
@@ -334,6 +478,25 @@ class TikTokDownloader:
                 # Navigate to page
                 page.goto(url, wait_until="networkidle", timeout=self.timeout)
                 time.sleep(3)
+
+                # Check if video is unavailable
+                page_text = page.inner_text("body") or ""
+                unavailable_indicators = [
+                    "目前无法观看视频",  # Chinese: Currently unable to view video
+                    "Video is unavailable",
+                    "This video is unavailable",
+                    "item doesn't exist",
+                    "Couldn't find this account",
+                    "This account is private",
+                ]
+                for indicator in unavailable_indicators:
+                    if indicator.lower() in page_text.lower():
+                        browser.close()
+                        return {
+                            "success": False,
+                            "error": f"Video unavailable: {indicator}",
+                            "metadata": {}
+                        }
 
                 # Extract metadata
                 metadata = self._get_video_metadata(page, url)

@@ -14,12 +14,16 @@ import type {
   ScriptGenerationResponse,
   VideoGenerationResponse,
   VideoStatusResponse,
+  ProductionScript,
+  ProductionScriptResponse,
 } from '@/types/tiktok';
 
 // Re-export types for backward compatibility
 export type {
   TikTokVideo,
   TrendingVideosResponse,
+  ProductionScript,
+  ProductionScriptResponse,
 };
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || process.env.BACKEND_API_URL || 'http://localhost:8000';
@@ -135,6 +139,64 @@ export class TikTokService {
     }
 
     return data.script;
+  }
+
+  // ============================================
+  // Production Script APIs (New Backend)
+  // ============================================
+
+  /**
+   * Generate a production script from video analysis
+   * @param videoAnalysisId The task ID of completed video analysis
+   * @param scriptType Type of script to generate (full or simple)
+   */
+  async generateProductionScript(
+    videoAnalysisId: string,
+    scriptType: 'full' | 'simple' = 'full'
+  ): Promise<ProductionScriptResponse> {
+    const response = await fetch(`${this.baseUrl}/api/v1/generate-script`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        video_analysis_id: videoAnalysisId,
+        script_type: scriptType,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to generate production script');
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get production script by video analysis ID
+   * @param videoAnalysisId The task ID of video analysis
+   */
+  async getProductionScript(videoAnalysisId: string): Promise<ProductionScriptResponse> {
+    const response = await fetch(`${this.baseUrl}/api/v1/script/${videoAnalysisId}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Script not found');
+      }
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to get production script');
+    }
+
+    const data = await response.json();
+    return {
+      task_id: data.script_id,
+      video_analysis_id: data.video_analysis_id,
+      status: 'completed',
+      script: data.script_data,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+    };
   }
 
   // ============================================

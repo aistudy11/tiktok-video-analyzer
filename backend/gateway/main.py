@@ -7,6 +7,7 @@ from pathlib import Path
 from pydantic import BaseModel
 import logging
 import os
+import sys
 
 from config import settings
 from models import (
@@ -17,6 +18,19 @@ from models import (
 )
 from services.task_manager import TaskManager, get_task_manager
 from tasks.video_analysis import analyze_video_task
+
+# Add skills path to sys.path for imports
+skills_path = Path(__file__).parent.parent / "skills"
+if str(skills_path) not in sys.path:
+    sys.path.insert(0, str(skills_path))
+
+from script_generator import (
+    ScriptGenerator,
+    ScriptGenerateRequest,
+    ScriptGenerateResponse,
+    ScriptType,
+)
+from services.script_manager import ScriptManager, get_script_manager
 
 
 # Trending videos response models
@@ -309,6 +323,154 @@ async def get_trending_videos(
         hasMore=False,
         totalCount=len(sample_videos)
     )
+
+
+# === Script Generation API ===
+
+@app.post("/api/v1/generate-script", response_model=ScriptGenerateResponse)
+async def generate_script(
+    request: ScriptGenerateRequest,
+    tm: TaskManager = Depends(get_task_manager),
+    sm: ScriptManager = Depends(get_script_manager)
+):
+    """
+    Generate a production script from video analysis results.
+
+    The script includes:
+    - Success formula analysis (why the video went viral)
+    - Shot-by-shot storyboard
+    - Music beat points
+    - Reusable elements for adaptation
+    - Production guide
+    """
+    logger.info(f"Generating script for analysis: {request.video_analysis_id}")
+
+    # Get the original analysis task
+    task = await tm.get_task(request.video_analysis_id)
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Video analysis task {request.video_analysis_id} not found"
+        )
+
+    if task.status != TaskStatus.COMPLETED:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Video analysis is not completed (status: {task.status})"
+        )
+
+    if not task.result:
+        raise HTTPException(
+            status_code=400,
+            detail="Video analysis has no results"
+        )
+
+    # Check if script already exists
+    existing_script = await sm.get_script(request.video_analysis_id)
+    if existing_script and existing_script.get("script_data"):
+        logger.info(f"Returning existing script for {request.video_analysis_id}")
+        return ScriptGenerateResponse(
+            task_id=existing_script["script_id"],
+            video_analysis_id=request.video_analysis_id,
+            status="completed",
+            script=existing_script["script_data"]
+        )
+
+    # Prepare video info from task result
+    result = task.result
+    raw_metadata = result.raw_metadata or {}
+
+    video_info = {
+        "url": raw_metadata.get("video_url", ""),
+        "duration": result.duration or raw_metadata.get("duration", 0),
+        "author": result.author or raw_metadata.get("author", ""),
+        "title": result.video_title or raw_metadata.get("title", "")
+    }
+
+    # Prepare analysis result
+    analysis_result = {
+        "summary": result.content_summary or result.ai_analysis,
+        "viral_reason": raw_metadata.get("viral_reason", ""),
+        "cinematography": raw_metadata.get("cinematography", ""),
+        "ai_video_prompt": raw_metadata.get("ai_video_prompt", ""),
+        "category": raw_metadata.get("category", ""),
+        "target_audience": raw_metadata.get("target_audience", ""),
+        "topics": result.key_topics or [],
+        "sentiment": result.sentiment,
+        "sentiment_reason": raw_metadata.get("sentiment_reason", ""),
+        "engagement_level": result.engagement_prediction,
+        "engagement_reason": raw_metadata.get("engagement_reason", ""),
+        "marketing_value": raw_metadata.get("marketing_value", {}),
+        "recommendations": result.recommendations or []
+    }
+
+    # Generate script
+    if not settings.gemini_api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="Gemini API key not configured"
+        )
+
+    generator = ScriptGenerator(
+        api_key=settings.gemini_api_key,
+        model_name=settings.gemini_model,
+        base_url=settings.gemini_base_url
+    )
+
+    script_type = ScriptType.FULL if request.script_type == "full" else ScriptType.SIMPLE
+    gen_result = generator.generate_with_retry(video_info, analysis_result, script_type)
+
+    if not gen_result["success"]:
+        logger.error(f"Script generation failed: {gen_result.get('error')}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Script generation failed: {gen_result.get('error')}"
+        )
+
+    # Save script
+    script_data = gen_result["script"].model_dump()
+    script_id = await sm.save_script(
+        video_analysis_id=request.video_analysis_id,
+        script_data=script_data,
+        script_type=request.script_type
+    )
+
+    logger.info(f"Script {script_id} generated and saved for {request.video_analysis_id}")
+
+    return ScriptGenerateResponse(
+        task_id=script_id,
+        video_analysis_id=request.video_analysis_id,
+        status="completed",
+        script=script_data
+    )
+
+
+@app.get("/api/v1/script/{video_analysis_id}")
+async def get_script(
+    video_analysis_id: str,
+    sm: ScriptManager = Depends(get_script_manager)
+):
+    """
+    Get the production script for a video analysis.
+
+    Returns the generated script if it exists.
+    """
+    script_record = await sm.get_script(video_analysis_id)
+
+    if not script_record:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Script not found for video analysis {video_analysis_id}"
+        )
+
+    return {
+        "script_id": script_record["script_id"],
+        "video_analysis_id": script_record["video_analysis_id"],
+        "script_type": script_record.get("script_type", "full"),
+        "script_data": script_record["script_data"],
+        "created_at": script_record["created_at"],
+        "updated_at": script_record["updated_at"]
+    }
 
 
 if __name__ == "__main__":

@@ -1,0 +1,99 @@
+你是短视频制作专家。基于以下视频分析，快速生成制作脚本要点。
+
+## 视频信息
+- URL: {{video_url}}
+- 时长: {{duration}}秒
+- 作者: {{author}}
+- 标题: {{title}}
+
+## 分析结果
+{{existing_analysis}}
+
+## 请输出
+
+1. **爆款公式**（一句话总结）
+2. **分镜头表**（简化版，5-8个关键镜头）
+3. **音乐建议**（风格 + 3个关键卡点）
+4. **复刻要点**（3条最重要的建议）
+
+## 输出格式
+
+直接输出 JSON，结构如下：
+
+```json
+{
+  "script_version": "1.0",
+  "video_info": {
+    "original_url": "string",
+    "duration": number,
+    "author": "string",
+    "title": "string"
+  },
+  "success_formula": {
+    "hook_type": "string",
+    "hook_description": "string (一句话总结爆款公式)",
+    "content_structure": "string",
+    "emotional_arc": "string",
+    "key_success_factors": ["string (3条关键因素)"]
+  },
+  "storyboard": [
+    {
+      "shot_number": number,
+      "time_start": "MM:SS",
+      "time_end": "MM:SS",
+      "duration": number,
+      "shot_type": "string",
+      "visual_description": "string",
+      "script_text": "string",
+      "action_description": "string",
+      "camera_movement": "string",
+      "transition": "string",
+      "emotion": "string",
+      "notes": "string"
+    }
+  ],
+  "music_beats": {
+    "music_style": "string",
+    "bpm_range": "string",
+    "beat_points": [
+      {
+        "time": "MM:SS",
+        "action": "string",
+        "description": "string"
+      }
+    ]
+  },
+  "reusable_elements": {
+    "opening_hook": {
+      "technique": "string",
+      "example": "string",
+      "how_to_adapt": "string"
+    },
+    "engagement_triggers": [
+      {
+        "trigger_type": "string",
+        "original_example": "string",
+        "adaptation_tip": "string"
+      }
+    ],
+    "call_to_action": {
+      "cta_type": "string",
+      "original_text": "string",
+      "template": "string"
+    }
+  },
+  "production_guide": {
+    "equipment_needed": ["string (3-5项核心设备)"],
+    "preparation_steps": [
+      {
+        "step": number,
+        "description": "string",
+        "details": "string"
+      }
+    ],
+    "shooting_tips": ["string (3条核心拍摄技巧)"],
+    "editing_tips": ["string (3条核心剪辑技巧)"],
+    "estimated_production_time": "string"
+  }
+}
+```

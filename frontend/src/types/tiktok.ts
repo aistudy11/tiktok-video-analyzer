@@ -263,3 +263,160 @@ export type ScriptGenerationStatus = 'idle' | 'generating' | 'completed' | 'fail
  * Video generation status for useVideoGenerator hook
  */
 export type VideoGenerationStatus = 'idle' | 'starting' | 'processing' | 'completed' | 'failed';
+
+// ============================================
+// Production Script Types (New Backend API)
+// ============================================
+
+/**
+ * Video info in production script
+ */
+export interface ProductionVideoInfo {
+  original_url: string;
+  duration: number;
+  author: string;
+  title: string;
+}
+
+/**
+ * Success formula analysis
+ */
+export interface SuccessFormula {
+  hook_type: string;
+  hook_description: string;
+  content_structure: string;
+  emotional_arc: string;
+  key_success_factors: string[];
+}
+
+/**
+ * Single shot in storyboard
+ */
+export interface StoryboardShot {
+  shot_number: number;
+  time_start: string;
+  time_end: string;
+  duration: number;
+  shot_type: string;
+  visual_description: string;
+  script_text: string;
+  action_description: string;
+  camera_movement: string;
+  transition: string;
+  emotion: string;
+  notes: string;
+}
+
+/**
+ * Beat point for music sync
+ */
+export interface BeatPoint {
+  time: string;
+  action: string;
+  description: string;
+}
+
+/**
+ * Music beats info
+ */
+export interface MusicBeats {
+  music_style: string;
+  bpm_range: string;
+  beat_points: BeatPoint[];
+}
+
+/**
+ * Opening hook technique
+ */
+export interface OpeningHook {
+  technique: string;
+  example: string;
+  how_to_adapt: string;
+}
+
+/**
+ * Engagement trigger element
+ */
+export interface EngagementTrigger {
+  trigger_type: string;
+  original_example: string;
+  adaptation_tip: string;
+}
+
+/**
+ * Call to action element
+ */
+export interface CtaElement {
+  cta_type: string;
+  original_text: string;
+  template: string;
+}
+
+/**
+ * Reusable elements from video
+ */
+export interface ReusableElements {
+  opening_hook: OpeningHook;
+  engagement_triggers: EngagementTrigger[];
+  call_to_action: CtaElement;
+}
+
+/**
+ * Preparation step in production guide
+ */
+export interface PreparationStep {
+  step: number;
+  description: string;
+  details: string;
+}
+
+/**
+ * Production guide
+ */
+export interface ProductionGuide {
+  equipment_needed: string[];
+  preparation_steps: PreparationStep[];
+  shooting_tips: string[];
+  editing_tips: string[];
+  estimated_production_time: string;
+}
+
+/**
+ * Complete production script from backend
+ */
+export interface ProductionScript {
+  script_version: string;
+  video_info: ProductionVideoInfo;
+  success_formula: SuccessFormula;
+  storyboard: StoryboardShot[];
+  music_beats: MusicBeats;
+  reusable_elements: ReusableElements;
+  production_guide: ProductionGuide;
+}
+
+/**
+ * Production script generation request
+ */
+export interface ProductionScriptRequest {
+  video_analysis_id: string;
+  script_type: 'full' | 'simple';
+  category?: string;
+}
+
+/**
+ * Production script generation response
+ */
+export interface ProductionScriptResponse {
+  task_id: string;
+  video_analysis_id: string;
+  status: string;
+  script?: ProductionScript;
+  error?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Production script status for hook
+ */
+export type ProductionScriptStatus = 'idle' | 'generating' | 'completed' | 'failed';

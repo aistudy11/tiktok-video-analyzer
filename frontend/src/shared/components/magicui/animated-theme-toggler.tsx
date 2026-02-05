@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, SunDim } from "lucide-react";
+import { Sparkles, Zap } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { cn } from "@/shared/lib/utils";
@@ -12,24 +12,27 @@ type props = {
 
 export const AnimatedThemeToggler = ({ className }: props) => {
   const { theme, setTheme } = useTheme();
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isTitanium, setIsTitanium] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-
-    setIsDarkMode(theme === "dark");
+    setIsTitanium(theme === "titanium");
   }, [theme]);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const changeTheme = async () => {
     if (!buttonRef.current) return;
 
+    const newTheme = isTitanium ? "aurora" : "titanium";
+
     await document.startViewTransition(() => {
       flushSync(() => {
-        const dark = document.documentElement.classList.toggle("dark");
-        setTheme(dark ? "dark" : "light");
-        setIsDarkMode(dark);
+        // Remove old theme classes and add new one
+        document.documentElement.classList.remove("titanium", "aurora");
+        document.documentElement.classList.add(newTheme);
+        setTheme(newTheme);
+        setIsTitanium(newTheme === "titanium");
       });
     }).ready;
 
@@ -65,9 +68,9 @@ export const AnimatedThemeToggler = ({ className }: props) => {
       ref={buttonRef}
       onClick={changeTheme}
       className={cn(className)}
-      aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={isTitanium ? 'Switch to V8 Aurora theme' : 'Switch to V7 Titanium theme'}
     >
-      {isDarkMode ? <SunDim /> : <Moon />}
+      {isTitanium ? <Sparkles /> : <Zap />}
     </button>
   );
 };

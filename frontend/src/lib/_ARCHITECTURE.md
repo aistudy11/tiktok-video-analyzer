@@ -51,7 +51,6 @@ Pure functions for transforming backend API responses to frontend-compatible for
 **Functions:**
 - `parseJsonString(str)` - Parse JSON with markdown code block handling
 - `transformAIAnalysis(data)` - Map backend AI fields to frontend format
-- `transformVideoInfo(data, backendUrl, videoPath, tikwmInfo)` - Build VideoInfo
-- `fetchTikwmVideoInfo(url, apiUrl)` - Fetch video URLs from tikwm API
+- `transformVideoInfo(data, backendUrl, videoPath)` - Build VideoInfo from backend metadata
 - `extractVideoFilename(path)` - Extract filename from path
 - `extractTikTokUrlFromPath(path)` - Reconstruct TikTok URL from video path

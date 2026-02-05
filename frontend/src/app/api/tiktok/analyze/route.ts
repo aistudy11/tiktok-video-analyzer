@@ -18,7 +18,7 @@ const analyzeRequestSchema = z.object({
   ),
   callbackUrl: z.string().url().optional(),
   analysisPrompt: z.string().optional(),
-  syncToFeishu: z.boolean().optional().default(false),
+  syncToFeishu: z.boolean().optional().default(true),
 });
 
 export async function POST(request: NextRequest) {

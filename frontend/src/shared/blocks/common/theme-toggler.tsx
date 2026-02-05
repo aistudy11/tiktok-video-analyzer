@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Monitor, Moon, SunDim } from 'lucide-react';
+import { Sparkles, Zap } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { AnimatedThemeToggler } from '@/shared/components/magicui/animated-theme-toggler';
@@ -35,7 +35,7 @@ export function ThemeToggler({
   if (type === 'button') {
     return (
       <Button variant="outline" size="sm" className="hover:bg-primary/10">
-        <SunDim />
+        {theme === 'titanium' ? <Zap /> : <Sparkles />}
       </Button>
     );
   } else if (type === 'toggle') {
@@ -48,25 +48,18 @@ export function ThemeToggler({
         variant="outline"
       >
         <ToggleGroupItem
-          value="light"
-          onClick={() => setTheme('light')}
-          aria-label="Switch to light mode"
+          value="titanium"
+          onClick={() => setTheme('titanium')}
+          aria-label="Switch to V7 Titanium theme"
         >
-          <SunDim />
+          <Zap />
         </ToggleGroupItem>
         <ToggleGroupItem
-          value="dark"
-          onClick={() => setTheme('dark')}
-          aria-label="Switch to dark mode"
+          value="aurora"
+          onClick={() => setTheme('aurora')}
+          aria-label="Switch to V8 Aurora theme"
         >
-          <Moon />
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="system"
-          onClick={() => setTheme('system')}
-          aria-label="Switch to system mode"
-        >
-          <Monitor />
+          <Sparkles />
         </ToggleGroupItem>
       </ToggleGroup>
     );

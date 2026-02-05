@@ -125,45 +125,29 @@ export function extractTikTokUrlFromPath(videoPath: string | undefined): string 
 }
 
 /**
- * tikwm API response info
- */
-export interface TikwmVideoInfo {
-  videoUrl: string;
-  thumbnailUrl: string;
-}
-
-/**
  * Transform backend raw_metadata to frontend VideoInfo interface
  * Handles multiple data sources with priority fallback
  */
 export function transformVideoInfo(
   result: Record<string, unknown>,
   backendUrl: string,
-  videoPath?: string,
-  tikwmInfo?: TikwmVideoInfo | null
+  videoPath?: string
 ): VideoInfo | undefined {
   const rawMetadata = result.raw_metadata as Record<string, unknown> | undefined;
 
-  // Try to get thumbnail_url from multiple sources (priority order):
-  // 1. tikwm API response (freshest, most reliable)
-  // 2. Backend metadata
+  // Try to get thumbnail_url from backend metadata
   let thumbnailUrl = '';
-  if (tikwmInfo?.thumbnailUrl) {
-    thumbnailUrl = tikwmInfo.thumbnailUrl;
-  } else if (rawMetadata?.thumbnail_url) {
+  if (rawMetadata?.thumbnail_url) {
     thumbnailUrl = rawMetadata.thumbnail_url as string;
   } else if (rawMetadata?.cover) {
     thumbnailUrl = rawMetadata.cover as string;
   }
 
   // Get video URL - try multiple sources in order of preference:
-  // 1. tikwm API response (freshest, directly playable)
-  // 2. Direct tikwm URL from backend metadata
-  // 3. Constructed URL from video_path (requires backend /api/v1/video endpoint)
+  // 1. Direct URL from backend metadata
+  // 2. Constructed URL from video_path (requires backend /api/v1/video endpoint)
   let videoUrl = '';
-  if (tikwmInfo?.videoUrl) {
-    videoUrl = tikwmInfo.videoUrl;
-  } else if (rawMetadata?.video_url && typeof rawMetadata.video_url === 'string' && rawMetadata.video_url.startsWith('http')) {
+  if (rawMetadata?.video_url && typeof rawMetadata.video_url === 'string' && rawMetadata.video_url.startsWith('http')) {
     videoUrl = rawMetadata.video_url;
   } else if (videoPath) {
     // Fallback: construct URL from video_path (requires backend /api/v1/video endpoint)
@@ -217,41 +201,3 @@ export function transformVideoInfo(
   };
 }
 
-/**
- * Fetch video and thumbnail URLs from tikwm API
- * Used as fallback when backend metadata doesn't have these URLs
- */
-export async function fetchTikwmVideoInfo(
-  tiktokUrl: string,
-  tikwmApiUrl: string
-): Promise<TikwmVideoInfo | null> {
-  try {
-    const response = await fetch(tikwmApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        url: tiktokUrl,
-        hd: '1',
-      }),
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    if (data.code !== 0 || !data.data) {
-      return null;
-    }
-
-    const videoData = data.data;
-    return {
-      videoUrl: videoData.hdplay || videoData.play || '',
-      thumbnailUrl: videoData.cover || videoData.origin_cover || '',
-    };
-  } catch {
-    return null;
-  }
-}

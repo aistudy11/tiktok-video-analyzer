@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 
 // Theme-specific background images
 // To customize, add NEXT_PUBLIC_TITANIUM_BG_IMAGE to .env or place image in /public
-const TITANIUM_BG_IMAGE = process.env.NEXT_PUBLIC_TITANIUM_BG_IMAGE || '/images/titanium-bg.jpg';
+// Default: Unsplash space/titanium texture (same as V7 design template)
+const TITANIUM_BG_IMAGE = process.env.NEXT_PUBLIC_TITANIUM_BG_IMAGE || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2600&auto=format&fit=crop';
 
 export function BackgroundLayer() {
   const { theme } = useTheme();

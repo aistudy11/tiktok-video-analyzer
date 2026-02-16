@@ -5,7 +5,7 @@ import { getThemePage } from '@/core/theme';
 import { TikTokTrendingClient } from './client';
 import { DynamicPage } from '@/shared/types/blocks/landing';
 import { JsonLd, createWebSiteSchema } from '@/shared/components/seo/JsonLd';
-import { BackgroundLayer } from '@/themes/default/blocks/background-layer';
+
 
 export const metadata: Metadata = {
   title: 'TikTok Trending Videos - Analyze & Discover',
@@ -53,7 +53,6 @@ export default async function TikTokTrendingPage({
 
   return (
     <>
-      <BackgroundLayer />
       <JsonLd data={websiteSchema} />
       <Page locale={locale} page={page} />
     </>

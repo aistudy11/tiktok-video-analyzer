@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 @import './theme.css';
 
-/* Make dark: variants work with our titanium/aurora theme classes */
-@custom-variant dark (&:is(.titanium *, .aurora *));
+@custom-variant dark (&:is(.dark *, .titanium *, .aurora *));
 
 @plugin 'tailwindcss-animate';
 

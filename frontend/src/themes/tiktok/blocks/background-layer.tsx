@@ -20,7 +20,7 @@ export function BackgroundLayer() {
     return null;
   }
 
-  // V7 Titanium: Static background image
+  // V7 Titanium: Static background image with visible space/titanium texture
   if (theme === 'titanium') {
     return (
       <>
@@ -28,14 +28,14 @@ export function BackgroundLayer() {
           className="fixed inset-0 -z-10 bg-cover bg-center"
           style={{
             backgroundImage: `url('${TITANIUM_BG_IMAGE}')`,
-            filter: 'grayscale(90%) brightness(0.25) contrast(1.1)',
+            filter: 'grayscale(50%) brightness(0.4) contrast(1.15)',
             transform: 'scale(1.05)',
           }}
         />
         <div
           className="fixed inset-0 -z-10"
           style={{
-            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.95) 100%)',
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.8) 100%)',
           }}
         />
       </>
@@ -62,8 +62,8 @@ export function BackgroundLayer() {
             width: '50vw',
             height: '50vw',
             background: '#e2e8f0',
-            filter: 'blur(80px)',
-            opacity: 0.2,
+            filter: 'blur(60px)',
+            opacity: 0.25,
           }}
         />
         {/* Cyan Blob */}
@@ -75,8 +75,8 @@ export function BackgroundLayer() {
             width: '60vw',
             height: '60vw',
             background: '#06b6d4',
-            filter: 'blur(80px)',
-            opacity: 0.3,
+            filter: 'blur(60px)',
+            opacity: 0.45,
             animationDelay: '-2s',
           }}
         />
@@ -89,8 +89,8 @@ export function BackgroundLayer() {
             width: '70vw',
             height: '70vw',
             background: '#0ea5e9',
-            filter: 'blur(80px)',
-            opacity: 0.3,
+            filter: 'blur(60px)',
+            opacity: 0.4,
             animationDelay: '-4s',
           }}
         />
